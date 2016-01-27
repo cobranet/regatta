@@ -1,0 +1,6 @@
+#+TITLE Regatta Board game
+#+AUTHOR Cobranet
+#+DATE 2016-01-27
+* TODO
+*** TODO Draw SVG tile
+*** TODO Rotate SVG tile 

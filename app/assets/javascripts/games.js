@@ -24,7 +24,7 @@ var tile = function() {
 	size: 30,
 	n: 8,
 	table: [],
-	colors: ["black","white"],
+	colors: ["green","red"],
 	create_table: function(){
 	    for (var i = 0; i < t.n ; i++){
 		t.table[i] = [];
@@ -113,7 +113,8 @@ var tile = function() {
 		.attr("d",t.create_path(t.x + col * t.size  ,
 					t.y + row * t.size ,t.size))
 		.attr("stroke","gold" )
-		.attr("fill",color)
+	    //		.attr("fill",color)
+	        .attr("class","player"+c)
 		.attr("stroke-width",1)
 	        .attr("id","t" + row + col)
 		.attr("transform", "rotate(" + (pos*45) +"," +

@@ -4,6 +4,15 @@
 
 @import 'variables';				     
 .container {
-	   padding: 0 100px;
+    padding: 0 100px;
+}
+
+.ttable {
+    border: 2px solid $orange1;
+}
+
+.player2 {
+    border: 2px solid $blue1;
+    fill: "red";
 }
 

@@ -6,8 +6,9 @@
 *** DONE Rotate SVG tile 
 *** DONE Define table object
 *** DONE Check is placement is possible
-*** TODO Check is rotation is posible
-*** TODO Rotate in both direction 
+*** DONE Rotate in both direction 
 
+*** TODO Refactor -- Move mouse down outside d3.select
+*** TODO Make placement by mouse click with alternating colors in position 0
 * Insights
 There is 8 possible position inside cell.

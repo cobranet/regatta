@@ -8,15 +8,15 @@ var game = function(){
     return t;
 }();
 var tile = function() {
-    var arr = []
-    arr[0] = [0,0,0,0]; 
-    arr[1] = [1,0,1,1];
-    arr[2] = [];
-    arr[3] = [1,1,0,1];
-    arr[4] = [];
-    arr[5] = [1,1,1,0];
-    arr[6] = [];
-    arr[7] = [0,1,1,1];
+    var arr =
+	[[0,0,0,0], 
+	 [1,0,1,1],
+	 [],
+	 [1,1,0,1],
+	 [],
+	 [1,1,1,0],
+	 [],
+	 [0,1,1,1]];
 
     var t = {
 	x: 10,
@@ -29,7 +29,7 @@ var tile = function() {
 	    for (var i = 0; i < t.n ; i++){
 		t.table[i] = [];
 		for (var k = 0; k < t.n; k++){
-		    t.table[i][k] = {what:0,pos:-1,smer: 1};
+		    t.table[i][k] = {what:0,pos:-1};
 		}
 	    }
 	},
@@ -75,7 +75,6 @@ var tile = function() {
 	    return arr[pos];
 	},
 	check_placement: function(row,col,pos){
-   	    alert(t.table[row][col].what);
 	    a = t.position_penetrating(pos);
 	    
 	    if ( row == 0 && a[0] == 1) return false;
@@ -84,36 +83,35 @@ var tile = function() {
 	    if ( col == t.n-1 && a[1] == 1) return false;
 	    
 	    if ( row != 0 && t.table[row-1][col].what != 0 ){
-		b = t.position_penetrating(t.table[row-1][col]);
+		b = t.position_penetrating(t.table[row-1][col].pos);
 		if ( b[2] == 1 || a[0] == 1) return false;
 	    }
 	    
 	    if (row != t.n-1 && t.table[row+1][col].what != 0 ){
-		b = t.position_penetrating(t.table[row+1][col]);
+		b = t.position_penetrating(t.table[row+1][col].pos);
 		if ( b[0] == 1 || a[2] == 1) return false;
 	    }
 
 	    if (col != 0 && t.table[row][col-1].what != 0 ){
 
-		b = t.position_penetrating(t.table[row][col-1]);
+		b = t.position_penetrating(t.table[row][col-1].pos);
 		if ( b[1] == 1 || a[3] == 1) return false;
 	    }
 	    if (col != t.n-1 && t.table[row][col+1].what != 0 ){
-		b = t.position_penetrating(t.table[row][col+1]);
+		b = t.position_penetrating(t.table[row][col+1].pos);
 		if ( b[3] == 1 || a[1] == 1) return false;
 	    }
 	    return true;
 	},
 	draw_tile: function(row,col,pos,c){
-
-	    t.table[row][col] = {what: c+1,pos:pos,smer:1} ;    
+	    t.table[row][col] = {what: c+1,pos:pos} ;    
 	    color = t.colors[c];
 	    var rotation = 45;
 	    k = d3.select("#tiles").append("path")
 		.attr("d",t.create_path(t.x + col * t.size  ,
 					t.y + row * t.size ,t.size))
 		.attr("stroke","gold" )
-	    //		.attr("fill",color)
+	    	.attr("fill",color)
 	        .attr("class","player"+c)
 		.attr("stroke-width",1)
 	        .attr("id","t" + row + col)
@@ -121,15 +119,24 @@ var tile = function() {
 		      (t.x + col * t.size + t.size/2) + "," +
 		      (t.y + row * t.size + t.size/2) + ")" )
 		.on("mousedown", function(){
-		    s = t.table[row][col].smer;
-		    // pos1 = t.rotate_pos(pos,s);
-		    // if (t.check_placement(row,col,pos1) == false ) {
-		    // 	s = -s;
-		    // 	t.table[row][col].smer = s;
-		    // }
-		    r = s * 45; 
+		    mx = d3.mouse(this)[0];
+		    var s;
+		    if (mx < t.x + col*t.size + t.size/2 ) {
+			s = 1;
+		    } else {
+			s = -1;
+		    }
+		    pos1 = t.rotate_pos(pos,s);
+		    alert(" S=  " + s + " POS1=  " + pos1 + " POS " + pos  );
+		    if (t.check_placement(row,col,pos1) == false ) {
+		     	return;
+		    }
+		    t.table[row][col].pos = pos1;
+		    alert(t.table[row][col].pos);
+		    r = s * 45;
 		    d3.select(this)
-			.attr("transform", "rotate("+ (rotation+=r) +","+ (t.x +col*t.size+t.size/2) + ","+ (t.y + row*t.size+t.size/2) +")")});
+		.attr("transform", "rotate("+ (rotation+=r) +","+ (t.x +col*t.size+t.size/2) + ","+ (t.y + row*t.size+t.size/2) +")")
+	});
 	    return k;  
 	    
 	},
@@ -152,14 +159,14 @@ var tile = function() {
 
 $( function(){ 	       tile.create_table();
 		       tile.draw_grid();
-		       tile.draw_tile(1,1,0,1);
-		       tile.draw_tile(1,2,1,1);
-		       tile.draw_tile(1,3,2,1);
-		       tile.draw_tile(1,4,3,1);
-      		       tile.draw_tile(1,6,4,0);
-          	       tile.draw_tile(1,7,5,0);
-               	       tile.draw_tile(3,1,6,0);
-                       tile.draw_tile(3,2,7,0);
+		       tile.draw_tile(0,0,0,1);
+		       tile.draw_tile(1,1,1,1);
+		       tile.draw_tile(2,2,2,1);
+		       tile.draw_tile(3,3,3,1);
+      		       tile.draw_tile(4,4,0);
+          	       tile.draw_tile(5,5,5,0);
+               	       tile.draw_tile(6,6,6,0);
+                       tile.draw_tile(7,7,7,0);
 
  				      
 	     } );

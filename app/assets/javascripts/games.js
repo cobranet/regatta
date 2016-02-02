@@ -103,6 +103,45 @@ var tile = function() {
 	    }
 	    return true;
 	},
+	mouse_down: function(e){
+	    
+	    var x = (e.pageX - $('#tiles').offset().left-t.x) / t.size;
+	    var y = (e.pageY - $('#tiles').offset().top-t.y) / t.size
+	    var col = Math.floor(x);
+	    var row = Math.floor(y);
+
+	    var s= 0;
+	    if ( x - col  > 0.5){
+		s = 1;
+	    } else {
+		s = -1;
+	    }
+	    var tt = t.table[row][col];
+	    if (tt.what == 0){
+		return;
+	    }
+	    console.log(tt);
+    	    var rotation =  tt.pos * 45;
+	    if (t.check_placement(row,col,tt.pos) == false ) {
+	     	return;
+ 	    }
+	    var pos1 = t.rotate_pos(tt.pos,s);
+
+	    if (t.check_placement(row,col,pos1) == false ) {
+		return;
+	    }
+	    tt.pos = pos1;
+
+	    var r = s * 45;
+	    d3.select("#t" + row + col)
+		.attr("transform", "rotate("+ (rotation+=r) +","+ (t.x +col*t.size+t.size/2) + ","+ (t.y + row*t.size+t.size/2) +")");		
+
+	},
+	mouseover: function(){
+	    $( "#outer" ).mouseover(function() {
+		$( "#log" ).append( "<div>Handler for .mouseover() called.</div>" );
+	    });
+	},
 	draw_tile: function(row,col,pos,c){
 	    t.table[row][col] = {what: c+1,pos:pos} ;    
 	    color = t.colors[c];
@@ -117,31 +156,11 @@ var tile = function() {
 	        .attr("id","t" + row + col)
 		.attr("transform", "rotate(" + (pos*45) +"," +
 		      (t.x + col * t.size + t.size/2) + "," +
-		      (t.y + row * t.size + t.size/2) + ")" )
-		.on("mousedown", function(){
-		    mx = d3.mouse(this)[0];
-		    var s;
-		    if (mx < t.x + col*t.size + t.size/2 ) {
-			s = 1;
-		    } else {
-			s = -1;
-		    }
-		    pos1 = t.rotate_pos(pos,s);
-		    alert(" S=  " + s + " POS1=  " + pos1 + " POS " + pos  );
-		    if (t.check_placement(row,col,pos1) == false ) {
-		     	return;
-		    }
-		    t.table[row][col].pos = pos1;
-		    alert(t.table[row][col].pos);
-		    r = s * 45;
-		    d3.select(this)
-		.attr("transform", "rotate("+ (rotation+=r) +","+ (t.x +col*t.size+t.size/2) + ","+ (t.y + row*t.size+t.size/2) +")")
-	});
+		      (t.y + row * t.size + t.size/2) + ")" );
+		
 	    return k;  
-	    
 	},
 	draw_grid: function(){
-
 	    for(var i=0; i < 8; i++){
 		for(var k=0; k < 8; k++){
 		d3.select("#tiles").append("path")
@@ -159,14 +178,11 @@ var tile = function() {
 
 $( function(){ 	       tile.create_table();
 		       tile.draw_grid();
-		       tile.draw_tile(0,0,0,1);
-		       tile.draw_tile(1,1,1,1);
-		       tile.draw_tile(2,2,2,1);
-		       tile.draw_tile(3,3,3,1);
-      		       tile.draw_tile(4,4,0);
-          	       tile.draw_tile(5,5,5,0);
-               	       tile.draw_tile(6,6,6,0);
-                       tile.draw_tile(7,7,7,0);
-
+		       tile.draw_tile(3,4,0,1);
+		       tile.draw_tile(4,4,0,1);
+		       tile.draw_tile(5,4,7,2);
+		       $('#tiles').mousedown(tile.mouse_down);
+			   
+		       
  				      
 	     } );

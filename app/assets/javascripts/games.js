@@ -20,9 +20,12 @@ var tile = function() {
 
     var t = {
 	x: 10,
+	last_what: 1,
+	state: 0, // state 0 ... expect placement // state 1 expect rotate
 	y: 25,
 	size: 30,
 	n: 8,
+	lastpos: 2,
 	table: [],
 	colors: ["green","red"],
 	create_table: function(){
@@ -103,24 +106,57 @@ var tile = function() {
 	    }
 	    return true;
 	},
-	mouse_down: function(e){
-	    
-	    var x = (e.pageX - $('#tiles').offset().left-t.x) / t.size;
-	    var y = (e.pageY - $('#tiles').offset().top-t.y) / t.size
-	    var col = Math.floor(x);
-	    var row = Math.floor(y);
-
+	xy_colrow: function(e){
+	    pos = {};
+	    pos.x = (e.pageX - $('#tiles').offset().left-t.x) / t.size;
+	    pos.y = (e.pageY - $('#tiles').offset().top-t.y) / t.size;
+	    pos.col = Math.floor(pos.x);
+	    pos.row = Math.floor(pos.y);
+	    if (pos.col > 7 || pos.col < 0 || pos.row > 7 || pos.col > 7 ){
+		return null;
+	    }
 	    var s= 0;
-	    if ( x - col  > 0.5){
+	    if ( pos.x - pos.col  > 0.5){
 		s = 1;
 	    } else {
 		s = -1;
 	    }
-	    var tt = t.table[row][col];
+	    pos.s = s;
+	    return pos;
+	},
+	mouse_place: function(e){
+	    var what = 0;
+	    if(t.last_what == 1 ) { what = 2; } else { what = 1; }; 
+	    pos = t.xy_colrow(e);
+	    var col =pos.col;
+	    var row = pos.row;
+	    var s= pos.s;
+	    var tt = t.table[pos.row][pos.col];
+	    if (tt.what != 0){
+		return;
+	    }
+	    t.draw_tile(row,col,0,what);
+	    t.state = 1;
+	    t.last_what = what;
+	    
+	},
+	mouse_down: function(e){
+	    if (t.state == 1){
+		t.mouse_rotate(e);
+	    } else {
+		t.mouse_place(e);
+	    }
+	},
+	mouse_rotate: function(e){
+	    
+	    pos = t.xy_colrow(e);
+	    var col =pos.col;
+	    var row = pos.row;
+	    var s= pos.s;
+	    var tt = t.table[pos.row][pos.col];
 	    if (tt.what == 0){
 		return;
 	    }
-	    console.log(tt);
     	    var rotation =  tt.pos * 45;
 	    if (t.check_placement(row,col,tt.pos) == false ) {
 	     	return;
@@ -137,13 +173,22 @@ var tile = function() {
 		.attr("transform", "rotate("+ (rotation+=r) +","+ (t.x +col*t.size+t.size/2) + ","+ (t.y + row*t.size+t.size/2) +")");		
 
 	},
-	mouseover: function(){
-	    $( "#outer" ).mouseover(function() {
-		$( "#log" ).append( "<div>Handler for .mouseover() called.</div>" );
+	bind_mouse: function(){
+	    $( "#tiles" ).mousemove(function(e) {
+		pos = t.xy_colrow(e);
+		if ( t.lastpos != pos ){
+		    t.lastpos = pos;
+		} else {
+		    return;
+		}
+		    
+		if (t.lastpos === null) { return; }
+		tt = t.table[t.lastpos.row][t.lastpos.col];
+   		console.log(tt + "ROW " + t.lastpos.row + " " + t.lastpos.col);
 	    });
 	},
 	draw_tile: function(row,col,pos,c){
-	    t.table[row][col] = {what: c+1,pos:pos} ;    
+	    t.table[row][col] = {what: c+1,pos:pos,row:row,col:col} ;    
 	    color = t.colors[c];
 	    var rotation = 45;
 	    k = d3.select("#tiles").append("path")
@@ -151,7 +196,7 @@ var tile = function() {
 					t.y + row * t.size ,t.size))
 		.attr("stroke","gold" )
 	    	.attr("fill",color)
-	        .attr("class","player"+c)
+	        .attr("class","player"+ c )
 		.attr("stroke-width",1)
 	        .attr("id","t" + row + col)
 		.attr("transform", "rotate(" + (pos*45) +"," +
@@ -177,6 +222,7 @@ var tile = function() {
 }();
 
 $( function(){ 	       tile.create_table();
+		       tile.bind_mouse();
 		       tile.draw_grid();
 		       tile.draw_tile(3,4,0,1);
 		       tile.draw_tile(4,4,0,1);

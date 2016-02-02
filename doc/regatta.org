@@ -10,6 +10,6 @@
 
 *** DONE Refactor -- Move mouse down outside d3.select
 *** TODO Make placement by mouse click with alternating colors in position 0
-*** TODO On mouse hover show tile data as tooltip
+*** DONE On mouse hover show tile data in console
 * Insights
 There is 8 possible position inside cell.

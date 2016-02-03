@@ -20,8 +20,8 @@ var tile = function() {
 
     var t = {
 	x: 10,
-	last_what: 1,
-	state: 0, // state 0 ... expect placement // state 1 expect rotate
+	on_move: 1,
+	state: 0, // state 0 ... expect placement // state 1 expect rotate // 2 slide expect rotate // 3 where to slide
 	y: 25,
 	size: 30,
 	n: 8,
@@ -61,14 +61,18 @@ var tile = function() {
 	},
 	hint: function(){
 	    if (t.state == 0 ){
-		$("#hint").text("Place tile");
+		$("#hint").text("Place tile or slide");
 		return;
 	    };
 	    if (t.state == 1 ){
 		$("#hint").text("Rotate tile and press done");
 		return;
 	    };
-
+	    if (t.state == 2 ){
+		$("#hint").text("Rotate tile and press done to slide");
+		return;
+	    };
+	    
 	    
 	},
 	create_grid_path: function(x,y,size){
@@ -91,7 +95,6 @@ var tile = function() {
 	},
 	check_placement: function(row,col,pos){
 	    a = t.position_penetrating(pos);
-	    console.log(a);
 	    if ( row == 0 && a[0] == 1) {
 		console.log("In first row and penetrating north!");
 		return false;
@@ -160,7 +163,7 @@ var tile = function() {
 	    pos.y = (e.pageY - $('#tiles').offset().top-t.y) / t.size;
 	    pos.col = Math.floor(pos.x);
 	    pos.row = Math.floor(pos.y);
-	    if (pos.col > 7 || pos.col < 0 || pos.row > 7 || pos.col > 7 ){
+	    if (pos.col > 7 || pos.col < 0 || pos.row > 7 || pos.row < 0 ){
 		return null;
 	    }
 	    var s= 0;
@@ -172,15 +175,37 @@ var tile = function() {
 	    pos.s = s;
 	    return pos;
 	},
-	bind_done: function(){
-	    $("#done").click(function(){
+	done_action: function() {
+	    if (t.state == 1 ) {
 		t.state = 0;
 		t.done(false);
-	    });
+		t.next_player();
+		return;
+	    }
+	    if (t.state == 2 ) {
+		alert("now slide to ");
+		return;
+	    }
+	    
+	},
+	bind_done: function(){
+	    $("#done").click(t.done_action);
+	},
+	slide: function(pos){
+	    t.state = 2;
+	    t.hint();
+	    t.done(true);
+	},
+	next_player: function(){
+	    if (t.on_move == 1 ) {
+		t.on_move = 2;
+		return;
+	    }
+	    t.on_move = 1;
 	},
 	mouse_place: function(e){
-	    var what = 0;
-	    if(t.last_what == 1 ) { what = 2; } else { what = 1; }; 
+	    alert(t.on_move);
+	    var what = t.on_move;
 	    pos = t.xy_colrow(e);
 	    var col =pos.col;
 	    var row = pos.row;
@@ -193,7 +218,6 @@ var tile = function() {
 		if(t.check_placement(row,col,whatpos)){
 		    t.draw_tile(row,col,whatpos,what);
 		    t.state = 1;
-		    t.last_what = what;
 		    t.done(true);
 		    return;
 		}
@@ -201,11 +225,24 @@ var tile = function() {
 	    
 	},
 	mouse_down: function(e){
-	    if (t.state == 1){
+	    pos = t.xy_colrow(e);
+	    if (pos == null){
+		return;
+	    }
+	    tt = t.table[pos.row][pos.col];
+	    if ((t.state == 1 || t.state == 2)  && tt.what == t.on_move ){
 		t.mouse_rotate(e);
-	    } else {
+		return;
+	    }
+	    if (t.state == 0 && tt.what == 0 ) {
 		t.mouse_place(e);
 		t.hint();
+		return;
+	    }
+	    console.log(t);
+	    console.log(tt.what);
+	    if (t.state == 0 && tt.what != 0 && tt.what == t.on_move ){
+		t.slide(pos);
 	    }
 	},
 	done: function(show){
@@ -217,7 +254,6 @@ var tile = function() {
 	    }
 	},
 	mouse_rotate: function(e){
-	    
 	    pos = t.xy_colrow(e);
 	    var col =pos.col;
 	    var row = pos.row;
@@ -256,7 +292,7 @@ var tile = function() {
 	    });
 	},
 	draw_tile: function(row,col,pos,c){
-	    t.table[row][col] = {what: c+1,pos:pos,row:row,col:col} ;    
+	    t.table[row][col] = {what: c,pos:pos,row:row,col:col} ;    
 	    color = t.colors[c];
 	    var rotation = 45;
 	    k = d3.select("#tiles").append("path")

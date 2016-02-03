@@ -9,7 +9,17 @@
 *** DONE Rotate in both direction 
 
 *** DONE Refactor -- Move mouse down outside d3.select
-*** TODO Make placement by mouse click with alternating colors in position 0
+*** DONE Make placement by mouse click with alternating colors in position 0
 *** DONE On mouse hover show tile data in console
+*** DONE Make done button after placement
+*** TODO Slide Action !!!
+*** DONE Hide DONE if placement state
+*** TODO Save to database
+*** DONE Block placement if invalid
+*** TODO Make ENTER to do DONE
+*** TODO Make game JSON .. 
+*** TODO On game JSON check validity
 * Insights
-There is 8 possible position inside cell.
+** There is 8 possible position inside cell.
+
+

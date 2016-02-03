@@ -13,6 +13,7 @@
 *** DONE On mouse hover show tile data in console
 *** DONE Make done button after placement
 *** TODO Slide Action !!!
+**** TODO Slide me by south if you can
 *** DONE Hide DONE if placement state
 *** TODO Save to database
 *** DONE Block placement if invalid
@@ -21,5 +22,7 @@
 *** TODO On game JSON check validity
 * Insights
 ** There is 8 possible position inside cell.
-
-
+** Active positions is odd .. inactive is even and when placing tile must be in active position unless there is no active position..
+** When start slide action you must position tile in unactive position ... 
+** When do slide you must check only move in slide direction ... you move other tiles in othoganal if they can..?! .. problem!?
+** Slided... Tile is slided (changed position ) .. Must finish in regular position... 

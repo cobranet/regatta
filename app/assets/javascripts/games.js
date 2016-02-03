@@ -20,6 +20,7 @@ var tile = function() {
 
     var t = {
 	x: 10,
+	slide_from: null,
 	on_move: 1,
 	state: 0, // state 0 ... expect placement // state 1 expect rotate // 2 slide expect rotate // 3 where to slide
 	y: 25,
@@ -70,6 +71,10 @@ var tile = function() {
 	    };
 	    if (t.state == 2 ){
 		$("#hint").text("Rotate tile and press done to slide");
+		return;
+	    };
+	    if (t.state == 3 ){
+		$("#hint").text("Where to slide");
 		return;
 	    };
 	    
@@ -183,15 +188,19 @@ var tile = function() {
 		return;
 	    }
 	    if (t.state == 2 ) {
-		alert("now slide to ");
+		t.state = 3;
+		t.done(false);
+		t.hint();
 		return;
 	    }
+	    
 	    
 	},
 	bind_done: function(){
 	    $("#done").click(t.done_action);
 	},
 	slide: function(pos){
+	    t.slide_from = pos;
 	    t.state = 2;
 	    t.hint();
 	    t.done(true);
@@ -204,7 +213,6 @@ var tile = function() {
 	    t.on_move = 1;
 	},
 	mouse_place: function(e){
-	    alert(t.on_move);
 	    var what = t.on_move;
 	    pos = t.xy_colrow(e);
 	    var col =pos.col;
@@ -224,7 +232,11 @@ var tile = function() {
 	    }
 	    
 	},
+	slide_to:function(to){
+	    alert ("slide from " + t.from + " to " + to );
+	},
 	mouse_down: function(e){
+	    console.log(t);
 	    pos = t.xy_colrow(e);
 	    if (pos == null){
 		return;
@@ -239,11 +251,13 @@ var tile = function() {
 		t.hint();
 		return;
 	    }
-	    console.log(t);
-	    console.log(tt.what);
 	    if (t.state == 0 && tt.what != 0 && tt.what == t.on_move ){
 		t.slide(pos);
 	    }
+	    if (t.state == 3 && tt.what == 0 ){
+		t.slide_to(pos);
+	    }
+	    
 	},
 	done: function(show){
 	    if (show) {

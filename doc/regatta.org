@@ -18,8 +18,11 @@
 *** TODO Save to database
 *** DONE Block placement if invalid
 *** TODO Make ENTER to do DONE
+*** DONE Can't slide if is in active position
+*** TODO Make active function from position
 *** TODO Make game JSON .. 
 *** TODO On game JSON check validity
+*** TODO Sound when rotate
 * Insights
 ** There is 8 possible position inside cell.
 ** Active positions is odd .. inactive is even and when placing tile must be in active position unless there is no active position..

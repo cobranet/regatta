@@ -1,12 +1,3 @@
-var game = function(){
-    t = {
-	is_place_possible: function(table,row,col,pos){
-	    return 0;  
-	}
-    }
-    
-    return t;
-}();
 var tile = function() {
     var arr =
 	[[0,0,0,0], 
@@ -20,7 +11,6 @@ var tile = function() {
 
     var t = {
 	x: 10,
-	slide_from: null,
 	on_move: 1,
 	state: 0, // state 0 ... expect placement // state 1 expect rotate // 2 slide expect rotate // 3 where to slide
 	y: 25,
@@ -232,16 +222,62 @@ var tile = function() {
 	    }
 	    
 	},
-	slide_to:function(to){
-	    alert ("slide from " + t.from + " to " + to );
+	can_slide: function(where,pos,s){
+	    s = 'E'; // East
+	    tt = t.table[where.row][where.col];
+	    t.position_penetrating(tt.pos);
+	    // if occupated can't slide
+	    if ( tt.what != 0 ){
+		return false;
+	    }
+	    if (pos == 0 && s == 'E' && where.col == 7 ) {
+		return true; // this is ok .. 
+	    }
+	    // col is not 7 ..
+	    tt1 = t.table[where.row][where.col + 1];
+	    if (tt1.what == 0 ){
+		return true; /// ok 
+	    }
+	    arr = position_penetrating(tt1.pos);
+	    if (poss == 0 && s == 'E' && arr[3] == 0 ){
+		return true; 
+	    }
+	    return false; /// if not true .. then is false
+	    
 	},
-	mouse_down: function(e){
-	    console.log(t);
-	    pos = t.xy_colrow(e);
-	    if (pos == null){
+	is_active: function(pos){
+	    if ( pos % 2  == 0 ){
+		return false;
+	    }
+	    return true;
+	},
+	slide_east: function (from,to){
+	    tt = t.table[from.row][from.col];
+	    if ( t.can_slide(from,tt.pos)){
 		return;
 	    }
-	    tt = t.table[pos.row][pos.col];
+	},
+	slide_to:function(from,to){
+	    alert ("slide from (" + from.row + "," + from.col   + ") to (" + to.row + "," + to.col + ")" );
+	    tt = t.table[from.row][from.col];
+	    if(t.is_active(tt.pos)){
+		return; // must bi in inactive position
+            }
+	    if (tt.pos == 0 ) { // slide east 
+		if (to.row != from.row ){
+		    return;
+		} else {
+		    t.slide_east(from,to);
+		}
+		
+	    }},
+	mouse_down: function(e){
+	    console.log(t);
+	    mouse = t.xy_colrow(e);
+	    if (mouse == null){
+		return;
+	    }
+	    tt = t.table[mouse.row][mouse.col];
 	    if ((t.state == 1 || t.state == 2)  && tt.what == t.on_move ){
 		t.mouse_rotate(e);
 		return;
@@ -251,11 +287,11 @@ var tile = function() {
 		t.hint();
 		return;
 	    }
-	    if (t.state == 0 && tt.what != 0 && tt.what == t.on_move ){
-		t.slide(pos);
+	    if (t.state == 0 && tt.what != 0 && tt.what == t.on_move && t.is_active(tt.pos) ){
+		t.slide(mouse);
 	    }
 	    if (t.state == 3 && tt.what == 0 ){
-		t.slide_to(pos);
+		t.slide_to(t.slide_from,mouse);
 	    }
 	    
 	},

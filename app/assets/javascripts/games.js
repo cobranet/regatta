@@ -12,7 +12,7 @@ var tile = function() {
     var t = {
 	x: 10,
 	on_move: 1,
-	state: 0, // state 0 ... expect placement // state 1 expect rotate // 2 slide expect rotate // 3 where to slide
+	state: 0, // state 0 ... expect placement // state 1 expect rotate // 2 slide expect rotate // 3 where to slide // 4 end of slide
 	y: 25,
 	size: 30,
 	n: 8,
@@ -227,13 +227,14 @@ var tile = function() {
 	    tt = t.table[where.row][where.col];
 	    t.position_penetrating(tt.pos);
 	    // if occupated can't slide
+	    
 	    if ( tt.what != 0 ){
 		return false;
 	    }
-	    if (pos == 0 && s == 'E' && where.col == 7 ) {
+	    if (pos == 0 && s == 'E' && where.col  == 7 ) {
 		return true; // this is ok .. 
 	    }
-	    // col is not 7 ..
+	    // col is not 7
 	    tt1 = t.table[where.row][where.col + 1];
 	    if (tt1.what == 0 ){
 		return true; /// ok 
@@ -253,9 +254,24 @@ var tile = function() {
 	},
 	slide_east: function (from,to){
 	    tt = t.table[from.row][from.col];
-	    if ( t.can_slide(from,tt.pos)){
-		return;
+	    var k = 1;
+	    while(from.col + k <= to.col){
+		if ( t.can_slide({row: from.row,col: from.col + k} ,tt.pos,'E')){
+		    ;
+		} else {
+		    alert("can't slide");
+		    return;
+		}
+		k++;
 	    }
+
+	    t.table[from.row][from.col].what = 0;
+	    t.table[to.row][to.col] = tt;
+	    $("#t" + from.row + from.col).attr("id","t"+to.row + to.col);
+	    alert("tu sam");
+	    d3.select("#t" + to.row + to.col)
+		.attr("transform", "translate(" + (to.col-from.col)*t.size + ",0)" );
+
 	},
 	slide_to:function(from,to){
 	    alert ("slide from (" + from.row + "," + from.col   + ") to (" + to.row + "," + to.col + ")" );
@@ -263,7 +279,7 @@ var tile = function() {
 	    if(t.is_active(tt.pos)){
 		return; // must bi in inactive position
             }
-	    if (tt.pos == 0 ) { // slide east 
+	    if (tt.pos == 0 && from.col < to.col ) { // slide east 
 		if (to.row != from.row ){
 		    return;
 		} else {

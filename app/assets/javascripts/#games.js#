@@ -79,18 +79,17 @@ var tile = function() {
 	    return d;
 	},
 	kick_east_down: function(row,col){
-	    alert("kick (" + row + "," + col +")" );
+	    alert("kick");
 	    if (t.table[row][col].what != 0){
-		tt = t.table[row][col];
-		var arr = t.position_penetrating(tt.pos);
+		tt = table[row][col];
+		arr = t.position_penetrating(t.pos);
 		if (arr[0] == 1){
-		    t.rotate_tile({row:row,col:col},1);
+		 
+		    t.rotate_tile({row:row,col:col},s);
 		}
 	    }
 	},
 	rotate_tile: function(pos,s){
-	    row = pos.row;
-	    col = pos.col;
 	    var tt = t.table[pos.row][pos.col];
 	    if (tt.what == 0){
 		return;
@@ -297,7 +296,7 @@ var tile = function() {
 	    var k = 1;
 	    while(from.col + k <= to.col){
 		d3.select("#t" + to.row + to.col).attr("transform", "translate(" + t.size*k + ",0)" );
-		t.kick_east_down(to.row + 1 , from.col + k);
+		t.kick_east_down(to.row + 1 , to.col + k);
 		
 		k++;
 	    }
@@ -318,6 +317,7 @@ var tile = function() {
 		
 	    }},
 	mouse_down: function(e){
+	    console.log(t);
 	    mouse = t.xy_colrow(e);
 	    if (mouse == null){
 		return;

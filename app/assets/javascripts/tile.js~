@@ -1,0 +1,51 @@
+/* regatta Tile on table
+   Need to know every thing about self 
+*/
+var tiles = function(parent_id,size){
+    tt = {
+	myclass: "tiles",
+	parent_id: parent_id,
+	size: size,
+	id : 0,
+	colors: ["green","white"],
+	create: function(row,col,angle,color){
+	    tt = this;
+	    tile = {
+		id: tt.id++,
+		row: row, // 0 - 7
+		col: col,  // 
+		color: color, // -- 0 or 1
+		angle: angle, // -- 0 - 7
+		create_path: function(x,y,size){
+		    d = "M " + x + " " + y + " " +
+			"C " + (x+size/3) + " " + (y+2*size/3) + " " +
+			(x+size/3) + " " + (y+size-size/3)  + " " +
+	       		x + " " + (y+size) + " " + 
+			"L " + (x + size) + " " + (y+size) + " " +
+			"C " + (x+size) + " " + (y + size/10) + " " +
+			(x+size) + " " + (y + size/10) + " " +
+			x + " " + y;
+		    return d;
+		},
+		draw: function(){
+		    tt = this;
+		    console.log(tt);
+		    d3.select(parent_id).append("path")
+			.attr("d",tile.create_path( tile.col * tt.size  ,
+						 tile.row * tt.size ,tt.size))
+			.attr("stroke","gold" )
+	    		.attr("fill","black")
+			.attr("class","player"+ color )
+			.attr("stroke-width",1)
+			.attr("id","t"+tile.id)
+			.attr("transform", "rotate(" + (tile.angle*45) +"," +
+			      ( tile.col * tt.size + tt.size/2) + "," +
+			      ( tile.row * tt.size + tt.size/2) + ")" );
+	
+		}
+	    };
+	    return tile;
+	}		
+    };
+    return tt;
+};

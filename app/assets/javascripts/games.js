@@ -10,15 +10,16 @@ var tile = function() {
 	 [0,1,1,1]];
 
     var t = {
-	x: 10,
+	x: 0,
 	on_move: 1,
 	state: 0, // state 0 ... expect placement // state 1 expect rotate // 2 slide expect rotate // 3 where to slide // 4 end of slide
-	y: 25,
+	y: 0,
 	size: 30,
 	n: 8,
 	lastpos: 2,
 	table: [],
 	colors: ["green","white"],
+	tiles: tiles("#tiles",30),
 	create_table: function(){
 	    for (var i = 0; i < t.n ; i++){
 		t.table[i] = [];
@@ -79,7 +80,6 @@ var tile = function() {
 	    return d;
 	},
 	kick_east_down: function(row,col){
-	    alert("kick (" + row + "," + col +")" );
 	    if (t.table[row][col].what != 0){
 		tt = t.table[row][col];
 		var arr = t.position_penetrating(tt.pos);
@@ -241,6 +241,8 @@ var tile = function() {
 	    for ( var whatpos = 0; whatpos <= 7; whatpos++){
 		if(t.check_placement(row,col,whatpos)){
 		    t.draw_tile(row,col,whatpos,what);
+		    tile = t.tiles.create(row+1,col,whatpos,what);
+		    tile.draw();
 		    t.state = 1;
 		    t.done(true);
 		    return;

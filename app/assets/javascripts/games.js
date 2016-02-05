@@ -16,6 +16,7 @@ var tile = function() {
 	y: 0,
 	size: 30,
 	n: 8,
+	ids: 0,
 	lastpos: 2,
 	table: [],
 	colors: ["green","white"],
@@ -24,7 +25,7 @@ var tile = function() {
 	    for (var i = 0; i < t.n ; i++){
 		t.table[i] = [];
 		for (var k = 0; k < t.n; k++){
-		    t.table[i][k] = {what:0,pos:-1};
+		    t.table[i][k] = null;
 		}
 	    }
 	},
@@ -40,17 +41,8 @@ var tile = function() {
 		x + " " + y;
 	    return d;
 	},
+
 	// smer 1  clockwise .. -1 anticlock wise
-	rotate_pos: function(pos,smer){
-	    p = pos + smer;
-	    if (p>7) {
-		return 0;
-	    }
-	    if (p < 0){
-		return 7;
-	    }
-	    return p;
-	},
 	hint: function(){
 	    if (t.state == 0 ){
 		$("#hint").text("Place tile or slide");
@@ -134,10 +126,10 @@ var tile = function() {
 		return false;
 	    }
 	    
-	    if ( row != 0 && t.table[row-1][col].what != 0 ){
+	    if ( row != 0 && t.table[row-1][col] != null ){
 		north = t.table[row-1][col];
-		if ( north.pos != 6 ) {
-		    b = t.position_penetrating(north.pos);
+		if ( north.angle != 6 ) {
+		    b = t.position_penetrating(north.angle);
 		    if ( b[2] == 1 || a[0] == 1 ) {
 			console.log("On my north is tile which is not at 6 position and I penetrating north!");
 			return false;
@@ -145,10 +137,10 @@ var tile = function() {
 		}
 	    }
 	    
-	    if (row != t.n-1 && t.table[row+1][col].what != 0 ){
+	    if (row != t.n-1 && t.table[row+1][col] != null ){
 		south = t.table[row+1][col];
-		if (south.pos != 2 ){
-		    b = t.position_penetrating(south.pos);
+		if (south.angle != 2 ){
+		    b = t.position_penetrating(south.angle);
 		    if ( b[0] == 1 || a[2] == 1) {
 			console.log("On my south is tile which is not at 2 position and I penetrating south!");
 			return false;
@@ -156,20 +148,20 @@ var tile = function() {
 		}
 	    }
 
-	    if (col != 0 && t.table[row][col-1].what != 0 ){
+	    if (col != 0 && t.table[row][col-1] != null ){
 		west = t.table[row][col-1];
-		if (west.pos != 4 ) {
-		    b = t.position_penetrating(west.pos);
+		if (west.angle != 4 ) {
+		    b = t.position_penetrating(west.angle);
 		    if ( b[1] == 1 || a[3] == 1) {
 			console.log("On my west is tile which is not at 4 position and I penetrating west!");
 			return false;
 		    }
 		}
 	    }
-	    if (col != t.n-1 && t.table[row][col+1].what != 0 ){
+	    if (col != t.n-1 && t.table[row][col+1] != null ){
 		east = t.table[row][col+1];
-		if (east.pos != 0){
-		    b = t.position_penetrating(east.pos);
+		if (east.angle != 0){
+		    b = t.position_penetrating(east.angle);
 		    if ( b[3] == 1 || a[1] == 1) {
 			console.log("On my east is tile which is not at 0 position and I penetrating east!");
 			return false;
@@ -231,18 +223,11 @@ var tile = function() {
 	mouse_place: function(e){
 	    var what = t.on_move;
 	    pos = t.xy_colrow(e);
-	    var col =pos.col;
-	    var row = pos.row;
-	    var s= pos.s;
-	    var tt = t.table[pos.row][pos.col];
-	    if (tt.what != 0){
-		return;
-	    }
-	    for ( var whatpos = 0; whatpos <= 7; whatpos++){
-		if(t.check_placement(row,col,whatpos)){
-		    t.draw_tile(row,col,whatpos,what);
-		    tile = t.tiles.create(row+1,col,whatpos,what);
+	    for ( var angle = 0; angle <= 7; angle++){
+		if(t.check_placement(pos.row,pos.col,angle)){
+		    tile = t.tiles.create(t.ids++,pos.row,pos.col,angle,what);
 		    tile.draw();
+		    t.table[pos.row][pos.col] = tile;
 		    t.state = 1;
 		    t.done(true);
 		    return;
@@ -325,11 +310,17 @@ var tile = function() {
 		return;
 	    }
 	    tt = t.table[mouse.row][mouse.col];
-	    if ((t.state == 1 || t.state == 2)  && tt.what == t.on_move ){
+	    if (tt == null) {
+		var what =  null;
+	    } else {
+		what = tt.color;
+	    }
+	    if ((t.state == 1 || t.state == 2)  &&  tt != null // && tt.color == t.on_move
+	       ){
 		t.mouse_rotate(e);
 		return;
 	    }
-	    if (t.state == 0 && tt.what == 0 ) {
+	    if (t.state == 0 && tt == null ) {
 		t.mouse_place(e);
 		t.hint();
 		return;
@@ -356,25 +347,18 @@ var tile = function() {
 	    var col =pos.col;
 	    var row = pos.row;
 	    var s= pos.s;
-	    var tt = t.table[pos.row][pos.col];
-	    if (tt.what == 0){
+	    var tile = t.table[pos.row][pos.col];
+	    if (tile == null){
 		return;
 	    }
-    	    var rotation =  tt.pos * 45;
-	    if (t.check_placement(row,col,tt.pos) == false ) {
+	    if (t.check_placement(row,col,tile.angle) == false ) {
 	     	return;
  	    }
-	    var pos1 = t.rotate_pos(tt.pos,s);
-
-	    if (t.check_placement(row,col,pos1) == false ) {
+	    var new_angle = tile.rotate_pos(tile.angle,s);
+	    if (t.check_placement(row,col,new_angle) == false ) {
 		return;
 	    }
-	    tt.pos = pos1;
-
-	    var r = s * 45;
-	    d3.select("#t" + row + col)
-		.attr("transform", "rotate("+ (rotation+=r) +","+ (t.x +col*t.size+t.size/2) + ","+ (t.y + row*t.size+t.size/2) +")");		
-
+	    tile.rotate(s);
 	},
 	bind_mouse: function(){
 	    $( "#tiles" ).mousemove(function(e) {

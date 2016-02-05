@@ -6,15 +6,15 @@ var tiles = function(parent_id,size){
 	myclass: "tiles",
 	parent_id: parent_id,
 	size: size,
-	id : 0,
+	ids : 0,
 	colors: ["green","white"],
-	create: function(row,col,angle,color){
+	create: function(id,row,col,angle,color){
 	    tile = {
-		id: tt.id++,
 		row: row, // 0 - 7
 		col: col,  // 
 		color: color, // -- 0 or 1
 		angle: angle, // -- 0 - 7
+		id: id,
 		create_path: function(x,y,size){
 		    d = "M " + x + " " + y + " " +
 			"C " + (x+size/3) + " " + (y+2*size/3) + " " +
@@ -25,6 +25,28 @@ var tiles = function(parent_id,size){
 			(x+size) + " " + (y + size/10) + " " +
 			x + " " + y;
 		    return d;
+		},
+		rotate_pos: function(pos,smer){
+		    p = pos + smer;
+		    if (p>7) {
+			return 0;
+		    }
+		    if (p < 0){
+			return 7;
+		    }
+		    return p;
+		},
+		rotate:function(s){
+		    var r = s*45;
+		    var rotation = tile.angle * 45;
+		    tile.angle = tile.rotate_pos(tile.angle,s);
+		    console.log(tile.id);
+		    d3.select("#t" + tile.id)
+			.attr("transform",
+			      "rotate("+ (rotation+=r) +","+
+			      (tile.col*size+size/2) + ","+
+			      (tile.row*size+size/2) +")");		
+
 		},
 		draw: function(){
 		    d3.select(parent_id).append("path")

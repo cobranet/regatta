@@ -12,6 +12,7 @@
 *** DONE Make placement by mouse click with alternating colors in position 0
 *** DONE On mouse hover show tile data in console
 *** DONE Make done button after placement
+*** TODO FIX facking ids... FIRST!!
 *** TODO Slide Action !!!
 **** TODO Slide me by south if you can
 *** DONE Hide DONE if placement state

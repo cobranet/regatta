@@ -12,7 +12,7 @@
 *** DONE Make placement by mouse click with alternating colors in position 0
 *** DONE On mouse hover show tile data in console
 *** DONE Make done button after placement
-*** TODO FIX facking ids... FIRST!!
+*** DONE FIX facking ids... FIRST!!
 *** TODO Slide Action !!!
 **** TODO Slide me by south if you can
 *** DONE Hide DONE if placement state
@@ -20,10 +20,12 @@
 *** DONE Block placement if invalid
 *** TODO Make ENTER to do DONE
 *** DONE Can't slide if is in active position
+*** TODO Trace selected item ... in ? Tile of ? Game 
 *** TODO Make active function from position
 *** TODO Make game JSON .. 
 *** TODO On game JSON check validity
-*** TODO Sound when rotate
+*** DONE Sound when rotate
+*** TODO Sound when placed
 * Insights
 ** There is 8 possible position inside cell.
 ** Active positions is odd .. inactive is even and when placing tile must be in active position unless there is no active position..

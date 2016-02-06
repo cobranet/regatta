@@ -2,19 +2,19 @@
    Need to know every thing about self 
 */
 var tiles = function(parent_id,size){
+    var colors = ["green","white"];
+    var ids = 0;
     tt = {
 	myclass: "tiles",
 	parent_id: parent_id,
-	size: size,
-	ids : 0,
-	colors: ["green","white"],
-	create: function(id,row,col,angle,color){
+	create: function(row,col,angle,color){
+	    ids ++;
 	    tile = {
 		row: row, // 0 - 7
 		col: col,  // 
 		color: color, // -- 0 or 1
 		angle: angle, // -- 0 - 7
-		id: id,
+		id: ids,
 		create_path: function(x,y,size){
 		    d = "M " + x + " " + y + " " +
 			"C " + (x+size/3) + " " + (y+2*size/3) + " " +
@@ -37,11 +37,13 @@ var tiles = function(parent_id,size){
 		    return p;
 		},
 		rotate:function(s){
+		    var audio = new Audio('rotate.wav');
+		    audio.play();
 		    var r = s*45;
 		    var rotation = tile.angle * 45;
 		    tile.angle = tile.rotate_pos(tile.angle,s);
-		    console.log(tile.id);
-		    d3.select("#t" + tile.id)
+		    console.log(tile);
+		    d3.select("#t" + ids).transition().delay(300)
 			.attr("transform",
 			      "rotate("+ (rotation+=r) +","+
 			      (tile.col*size+size/2) + ","+
@@ -53,10 +55,10 @@ var tiles = function(parent_id,size){
 			.attr("d",tile.create_path( tile.col * size  ,
 						 tile.row * size ,size))
 			.attr("stroke","gold" )
-	    		.attr("fill","black")
+	    		.attr("fill",colors[color])
 			.attr("class","player"+ color )
 			.attr("stroke-width",1)
-			.attr("id","t"+tile.id)
+			.attr("id","t"+ ids)
 			.attr("transform", "rotate(" + (tile.angle*45) +"," +
 			      ( tile.col * size + size/2) + "," +
 			      ( tile.row * size + size/2) + ")" );

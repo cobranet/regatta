@@ -10,16 +10,13 @@ var tile = function() {
 	 [0,1,1,1]];
 
     var t = {
-	x: 0,
 	on_move: 1,
 	state: 0, // state 0 ... expect placement // state 1 expect rotate // 2 slide expect rotate // 3 where to slide // 4 end of slide
-	y: 0,
-	size: 30,
 	n: 8,
-	ids: 0,
+	size: 30,
 	lastpos: 2,
+	selected: null,
 	table: [],
-	colors: ["green","white"],
 	tiles: tiles("#tiles",30),
 	create_table: function(){
 	    for (var i = 0; i < t.n ; i++){
@@ -29,20 +26,6 @@ var tile = function() {
 		}
 	    }
 	},
-	// M 10 25 C 20 45 20 55 10 65 L 50 65 C 50 30 50 30 10 25
-	create_path: function(x,y,size){
-	    d = "M " + x + " " + y + " " +
-		"C " + (x+size/3) + " " + (y+2*size/3) + " " +
-		      (x+size/3) + " " + (y+size-size/3)  + " " +
-	       	x + " " + (y+size) + " " + 
-	    "L " + (x + size) + " " + (y+size) + " " +
-		"C " + (x+size) + " " + (y + size/10) + " " +
-		       (x+size) + " " + (y + size/10) + " " +
-		x + " " + y;
-	    return d;
-	},
-
-	// smer 1  clockwise .. -1 anticlock wise
 	hint: function(){
 	    if (t.state == 0 ){
 		$("#hint").text("Place tile or slide");
@@ -79,28 +62,6 @@ var tile = function() {
 		    t.rotate_tile({row:row,col:col},1);
 		}
 	    }
-	},
-	rotate_tile: function(pos,s){
-	    row = pos.row;
-	    col = pos.col;
-	    var tt = t.table[pos.row][pos.col];
-	    if (tt.what == 0){
-		return;
-	    }
-    	    var rotation =  tt.pos * 45;
-	    if (t.check_placement(row,col,tt.pos) == false ) {
-	     	return;
- 	    }
-	    var pos1 = t.rotate_pos(tt.pos,s);
-
-	    if (t.check_placement(row,col,pos1) == false ) {
-		return;
-	    }
-	    tt.pos = pos1;
-
-	    var r = s * 45;
-	    d3.select("#t" + row + col)
-		.attr("transform", "rotate("+ (rotation+=r) +","+ (t.x +col*t.size+t.size/2) + ","+ (t.y + row*t.size+t.size/2) +")");		
 	},
 	// returning blocking tiles as array of 0,1 in following order (North, East, South , West ) or ( row -1 , col + 1, row + 1, col -1 )
 	position_penetrating: function(pos) {
@@ -172,8 +133,8 @@ var tile = function() {
 	},
 	xy_colrow: function(e){
 	    pos = {};
-	    pos.x = (e.pageX - $('#tiles').offset().left-t.x) / t.size;
-	    pos.y = (e.pageY - $('#tiles').offset().top-t.y) / t.size;
+	    pos.x = (e.pageX - $('#tiles').offset().left) / t.size;
+	    pos.y = (e.pageY - $('#tiles').offset().top) / t.size;
 	    pos.col = Math.floor(pos.x);
 	    pos.row = Math.floor(pos.y);
 	    if (pos.col > 7 || pos.col < 0 || pos.row > 7 || pos.row < 0 ){
@@ -215,7 +176,7 @@ var tile = function() {
 	},
 	next_player: function(){
 	    if (t.on_move == 1 ) {
-		t.on_move = 2;
+		t.on_move = 0;
 		return;
 	    }
 	    t.on_move = 1;
@@ -225,7 +186,7 @@ var tile = function() {
 	    pos = t.xy_colrow(e);
 	    for ( var angle = 0; angle <= 7; angle++){
 		if(t.check_placement(pos.row,pos.col,angle)){
-		    tile = t.tiles.create(t.ids++,pos.row,pos.col,angle,what);
+		    tile = t.tiles.create(pos.row,pos.col,angle,what);
 		    tile.draw();
 		    t.table[pos.row][pos.col] = tile;
 		    t.state = 1;
@@ -373,29 +334,11 @@ var tile = function() {
 		tt = t.table[t.lastpos.row][t.lastpos.col];
 	    });
 	},
-	draw_tile: function(row,col,pos,c){
-	    t.table[row][col] = {what: c,pos:pos,row:row,col:col} ;    
-	    color = t.colors[c];
-	    var rotation = 45;
-	    k = d3.select("#tiles").append("path")
-		.attr("d",t.create_path(t.x + col * t.size  ,
-					t.y + row * t.size ,t.size))
-		.attr("stroke","gold" )
-	    	.attr("fill",color)
-	        .attr("class","player"+ c )
-		.attr("stroke-width",1)
-	        .attr("id","t" + row + col)
-		.attr("transform", "rotate(" + (pos*45) +"," +
-		      (t.x + col * t.size + t.size/2) + "," +
-		      (t.y + row * t.size + t.size/2) + ")" );
-		
-	    return k;  
-	},
 	draw_grid: function(){
 	    for(var i=0; i < 8; i++){
 		for(var k=0; k < 8; k++){
 		d3.select("#tiles").append("path")
-			.attr("d",t.create_grid_path(i*t.size+t.x,t.y+k*t.size,t.size))
+			.attr("d",t.create_grid_path(i*t.size,k*t.size,t.size))
 		    .attr("stroke","black")
 		    .attr("fill","lightgrey")
 		    .attr("stroke-width",1);

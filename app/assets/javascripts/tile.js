@@ -2,7 +2,7 @@
    Need to know every thing about self 
 */
 var tiles = function(parent_id,size){
-    var colors = ["green","white"];
+    var colors = ["black","white"];
     var ids = 0;
     tt = {
 	myclass: "tiles",
@@ -36,6 +36,27 @@ var tiles = function(parent_id,size){
 		    }
 		    return p;
 		},
+		move_east: function(k){
+		    d3.select("#t" + this.id).transition().delay(200).
+			attr("transform", "translate(" + size*k + ",0)" );
+		},
+		move_west: function(k){
+		    d3.select("#t" + this.id).transition().delay(200).
+			attr("transform", "translate(" +  (-size*k) + ",0)" );
+		},
+		move_south: function(k){
+		    d3.select("#t" + this.id).transition().delay(200).
+			attr("transform", "translate(0," +  (size*k) + ")" );
+		},
+		move_north: function(k) {
+		    d3.select("#t" + this.id).transition().delay(200).
+			attr("transform", "translate(0," +  (-size*k) + ")" );
+		    
+		},
+		redraw: function(){
+		    d3.select('#t' + this.id).remove();
+		    this.draw();
+		},
 		rotate:function(s){
 		    var audio = new Audio('rotate.wav');
 		    audio.play();
@@ -46,7 +67,8 @@ var tiles = function(parent_id,size){
 			.attr("transform",
 			      "rotate("+ (rotation+=r) +","+
 			      (this.col*size+size/2) + ","+
-			      (this.row*size+size/2) +")");		
+			      (this.row*size+size/2) +")");
+		    this.redraw();
 
 		},
 		draw: function(){

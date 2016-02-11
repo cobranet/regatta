@@ -12,22 +12,26 @@
 *** DONE Make placement by mouse click with alternating colors in position 0
 *** DONE On mouse hover show tile data in console
 *** DONE Make done button after placement
+*** DONE Slide Action !!!
 *** DONE FIX facking ids... FIRST!!
-*** TODO Slide Action !!!
-**** TODO Slide me by south if you can
 *** DONE Hide DONE if placement state
+*** DONE In state 1 can rotate anywhere but can stay in iregular position
 *** TODO Save to database
 *** DONE Block placement if invalid
 *** TODO Make ENTER to do DONE
 *** DONE Can't slide if is in active position
-*** TODO Trace selected item ... in ? Tile of ? Game 
-*** TODO Make active function from position
+*** DONE Trace selected item ... in ? Tile of ? Game 
+*** DONE Make active function from position
 *** TODO Make game JSON .. 
+*** TODO check if tile can't be activate
 *** TODO On game JSON check validity
 *** DONE Sound when rotate
 *** TODO Sound when placed
-*** TODO not rotate when click on other tile
-*** TODO Refactor game states .. 
+*** DONE not rotate when click on other tile
+*** DONE Refactor game states .. 
+*** TODO Make outer div actual svg size
+*** TODO Make some sort of tests in command patern for game...
+*** TODO Check winning condition
 * Insights
 ** There is 8 possible position inside cell.
 ** Active positions is odd .. inactive is even and when placing tile must be in active position unless there is no active position..

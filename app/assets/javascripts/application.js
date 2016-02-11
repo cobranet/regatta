@@ -15,4 +15,5 @@
 //= require turbolinks
 //= require d3
 //= require tile
+//= require states
 //= require games

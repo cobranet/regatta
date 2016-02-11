@@ -40,28 +40,27 @@ var tiles = function(parent_id,size){
 		    var audio = new Audio('rotate.wav');
 		    audio.play();
 		    var r = s*45;
-		    var rotation = tile.angle * 45;
-		    tile.angle = tile.rotate_pos(tile.angle,s);
-		    console.log(tile);
-		    d3.select("#t" + ids).transition().delay(300)
+		    var rotation = this.angle * 45;
+		    this.angle = this.rotate_pos(this.angle,s);
+		    d3.select("#t" + this.id).transition().delay(300)
 			.attr("transform",
 			      "rotate("+ (rotation+=r) +","+
-			      (tile.col*size+size/2) + ","+
-			      (tile.row*size+size/2) +")");		
+			      (this.col*size+size/2) + ","+
+			      (this.row*size+size/2) +")");		
 
 		},
 		draw: function(){
 		    d3.select(parent_id).append("path")
-			.attr("d",tile.create_path( tile.col * size  ,
-						 tile.row * size ,size))
+			.attr("d",this.create_path( this.col * size  ,
+						 this.row * size ,size))
 			.attr("stroke","gold" )
 	    		.attr("fill",colors[color])
 			.attr("class","player"+ color )
 			.attr("stroke-width",1)
-			.attr("id","t"+ ids)
-			.attr("transform", "rotate(" + (tile.angle*45) +"," +
-			      ( tile.col * size + size/2) + "," +
-			      ( tile.row * size + size/2) + ")" );
+			.attr("id","t"+ this.id)
+			.attr("transform", "rotate(" + (this.angle*45) +"," +
+			      ( this.col * size + size/2) + "," +
+			      ( this.row * size + size/2) + ")" );
 	
 		}
 	    };

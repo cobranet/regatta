@@ -26,6 +26,8 @@
 *** TODO On game JSON check validity
 *** DONE Sound when rotate
 *** TODO Sound when placed
+*** TODO not rotate when click on other tile
+*** TODO Refactor game states .. 
 * Insights
 ** There is 8 possible position inside cell.
 ** Active positions is odd .. inactive is even and when placing tile must be in active position unless there is no active position..

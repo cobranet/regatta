@@ -1,4 +1,4 @@
-var tile = function() {
+var tile = function(n,size) {
     var arr =
 	[[], 
 	 [1,0,1,1],
@@ -9,41 +9,38 @@ var tile = function() {
 	 [],
 	 [0,1,1,1]];
     var t = {
-	n: 8,
-	size: 30,
+	n: n,
+	size: size,
 	selected: null,
-	table: [],
+	table: create_table(8,size),
 	tiles: tiles("#tiles",30),
 	states: states('#hint','#done'),
-	create_table: function(){
-	    for (var i = 0; i < t.n ; i++){
-		t.table[i] = [];
-		for (var k = 0; k < t.n; k++){
-		    t.table[i][k] = null;
-		}
-	    }
+	rotate_pos: function(pos,smer){
+		    p = pos + smer;
+		    if (p>7) {
+			return 0;
+		    }
+		    if (p < 0){
+			return 7;
+		    }
+		    return p;
 	},
-	can_be_activate: function(row,col){
-	    for ( var i = 1; i<= 7 ; i = i + 2){
-		if (t.check_placement(row,col,i) == true) {
-		    return true;
-		}
+	can_be_activate: function(row,col,angle){
+	    if (t.check_placement(row,col,t.rotate_pos(angle,1)) == true) {
+		return true;
+	    }
+	    if (t.check_placement(row,col,t.rotate_pos(angle,-1)) == true) {
+		return true;
 	    }
 	    return false;
 	},
-	create_grid_path: function(x,y,size){
-	    d = "M " + x + " " + y + "  " + 
-	    "L "  + x + " " + (y+size) + " " +
-	    "L "  + (x +size) + " " + (y+size) + " " +
-		"L " +(x+size) + " " + y + " " +
-		"L " + x + " " +  y;
-	    return d;
-	},
-	
-	kick: function(row,col,s){
+	kick: function(row,col,s,from_where){ 
 	    if (t.table[row][col] != null){
-		  t.table[row][col].rotate(s);
+		var a = t.position_penetrating(t.table[row][col].angle);
+		if (a[from_where] == 1) {
+		    t.table[row][col].rotate(s);
 		}
+	    }
 	},
 	// returning blocking tiles as array of 0,1 in following order (North, East, South , West ) or ( row -1 , col + 1, row + 1, col -1 )
 	position_penetrating: function(pos) {
@@ -237,8 +234,8 @@ var tile = function() {
 	    var k = 1;
 	    while(from.col + k <= to.col){
 		from.move_east(k);
-		t.kick(to.row + 1 , from.col + k,1);
-		t.kick(to.row-1, from.col + k, -1);
+		t.kick(to.row + 1 , from.col + k,1,0);
+		t.kick(to.row-1, from.col + k, -1,2);
 		k++;
 	    }
 	    from.col = to.col;
@@ -264,7 +261,7 @@ var tile = function() {
 	    while(from.row - k >= to.row){
 		from.move_north(k);
 		t.kick(from.row - k  , from.col + 1,1);
-		t.kick(from.row - k  , from.col - 1,1);
+		t.kick(from.row - k  , from.col - 1,3);
 		k++;
 	    }
 	    from.col = to.col;
@@ -289,8 +286,8 @@ var tile = function() {
 	    var k = 1;
 	    while(from.row + k <= to.row){
 		from.move_south(k);
-		t.kick(from.row + k  , from.col + 1,1);
-		t.kick(from.row + k  , from.col - 1,-1);
+		t.kick(from.row + k  , from.col + 1,-1,3);
+		t.kick(from.row + k  , from.col - 1,1,1);
 		k++;
 	    }
 	    from.col = to.col;
@@ -315,7 +312,8 @@ var tile = function() {
 	    var k = 1;
 	    while(from.col - k >= to.col){
 		from.move_west(k);
-		t.kick(to.row + 1 , from.col - k,-1);
+		t.kick(to.row + 1 , from.col - k,-1,0);
+		t.kick(to.row - 1 , from.col - k,1,2);
 		k++;
 	    }
 	    from.col = to.col;
@@ -325,6 +323,7 @@ var tile = function() {
 	},
 	slide_to:function(from,to){
  	    tt = t.table[from.row][from.col];
+	    var angle = tt.angle;
 	    if(t.is_active(tt.angle)  ){
 		return; // must bi in inactive position
             }
@@ -346,9 +345,10 @@ var tile = function() {
 	    if (from.col == to.col  && from.row > to.row ) { // slide north
 		t.slide_north(from,to);
 	    }
-	    if ( t.can_be_activate(from.row,from.col)){
+	    if ( t.can_be_activate(from.row,from.col,angle)){
 		t.states.change(4);
 	    } else {
+		alert("state 5");
 		t.states.change(5);
 	    }
 	},
@@ -431,26 +431,15 @@ var tile = function() {
 		    t.slide_to(t.selected,mouse);
 		}
 	    }
-	},
-	draw_grid: function(){
-	    for(var i=0; i < 8; i++){
-		for(var k=0; k < 8; k++){
-		d3.select("#tiles").append("path")
-			.attr("d",t.create_grid_path(i*t.size,k*t.size,t.size))
-		    .attr("stroke","black")
-		    .attr("fill","lightgrey")
-		    .attr("stroke-width",1);
-		}
-	    }
 	}
     };
     return t;
-}();
+};
 
 
 $( function(){
-    tile.create_table();
-    tile.draw_grid();
+    tile = tile(8,30);
+    tile.table.draw_grid();
     $('#tiles').mousedown(tile.mouse_down);
     tile.bind_done();
     tile.states.hint();

@@ -15,6 +15,7 @@ var tiles = function(parent_id,size){
 		color: color, // -- 0 or 1
 		angle: angle, // -- 0 - 7
 		id: ids,
+		active: 0,
 		create_path: function(x,y,size){
 		    d = "M " + x + " " + y + " " +
 			"C " + (x+size/3) + " " + (y+2*size/3) + " " +
@@ -35,6 +36,14 @@ var tiles = function(parent_id,size){
 			return 7;
 		    }
 		    return p;
+		},
+		activate: function(){
+		    this.active = 1;
+		    this.redraw();
+		},
+		deactivate: function(){
+		    this.active = 0;
+		    this.redraw();
 		},
 		move_east: function(k){
 		    d3.select("#t" + this.id).transition().delay(200).
@@ -75,9 +84,8 @@ var tiles = function(parent_id,size){
 		    d3.select(parent_id).append("path")
 			.attr("d",this.create_path( this.col * size  ,
 						 this.row * size ,size))
-			.attr("stroke","gold" )
 	    		.attr("fill",colors[color])
-			.attr("class","player"+ color )
+			.attr("class","player"+ color + " active" + this.active  )
 			.attr("stroke-width",1)
 			.attr("id","t"+ this.id)
 			.attr("transform", "rotate(" + (this.angle*45) +"," +

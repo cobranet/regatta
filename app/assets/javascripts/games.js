@@ -12,6 +12,14 @@ var tile = function(n,size) {
 	n: n,
 	size: size,
 	selected: null,
+	select: function(which_tile){
+	    this.selected = which_tile;
+	    which_tile.activate();
+	},
+	deselect: function(which_tile){
+	    this.selected = null;
+	    which_tile.deactivate();
+	},
 	table: create_table(8,size),
 	tiles: tiles("#tiles",30),
 	states: states('#hint','#done'),
@@ -133,7 +141,7 @@ var tile = function(n,size) {
 	    var st = t.states.state;
 	    if (st == 1 || st == 5  ) {
 		st = 0;
-		t.selected = null;
+		t.deselect(t.selected);
 		t.states.change(0);
 		return;
 	    }
@@ -164,7 +172,7 @@ var tile = function(n,size) {
 		    t1.draw();
 		    t.table[pos.row][pos.col] = t1;
 		    t.states.change(1);
-		    t.selected = t1;
+		    t.select(t1);
 		    return;
 		}
 	    }
@@ -348,7 +356,6 @@ var tile = function(n,size) {
 	    if ( t.can_be_activate(from.row,from.col,angle)){
 		t.states.change(4);
 	    } else {
-		alert("state 5");
 		t.states.change(5);
 	    }
 	},
@@ -383,7 +390,7 @@ var tile = function(n,size) {
 		/* STATE 0 */
 		if ( st == 0 && tile_at_click.color == t.states.on_move ) {
 		    t.states.change(2);
-		    t.selected = tile_at_click;
+		    t.select(tile_at_click);
 		    var new_angle = tile_at_click.rotate_pos(tile.angle,mouse.s);
 		    if (t.check_placement(tile_at_click.row,tile_at_click.col,new_angle) == false ) {
 			return;
@@ -444,4 +451,6 @@ $( function(){
     tile.bind_done();
     tile.states.hint();
     tile.states.done(false);
+    $("#tiles").attr("width",tile.size * tile.n);
+    $("#tiles").attr("height",tile.size * tile.n);
 } );

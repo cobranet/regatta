@@ -34,6 +34,8 @@
 *** TODO Make outer div actual svg size
 *** TODO Make some sort of tests in command patern for game...
 *** TODO Check winning condition
+*** TODO When slide click on posible location is same as done
+*** DONE Make outline svg same size 
 * Insights
 ** There is 8 possible position inside cell.
 ** Active positions is odd .. inactive is even and when placing tile must be in active position unless there is no active position..

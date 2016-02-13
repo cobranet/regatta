@@ -16,7 +16,7 @@
 *** DONE FIX facking ids... FIRST!!
 *** DONE Hide DONE if placement state
 *** DONE In state 1 can rotate anywhere but can stay in iregular position
-*** TODO I need active tile .. Change color for active
+*** DONE I need active tile .. Change color for active
 *** TODO FIX West kick north 
 *** TODO Save to database
 *** DONE Block placement if invalid
@@ -25,13 +25,13 @@
 *** DONE Trace selected item ... in ? Tile of ? Game 
 *** DONE Make active function from position
 *** TODO Make game JSON .. 
-*** TODO check if tile can't be activate
+*** DONE check if tile can't be activate
 *** TODO On game JSON check validity
 *** DONE Sound when rotate
 *** TODO Sound when placed
 *** DONE not rotate when click on other tile
 *** DONE Refactor game states .. 
-*** TODO Make outer div actual svg size
+*** DONE Make outer div actual svg size
 *** TODO Make some sort of tests in command patern for game...
 *** TODO Check winning condition
 *** TODO When slide click on posible location is same as done

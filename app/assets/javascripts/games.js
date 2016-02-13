@@ -16,6 +16,20 @@ var tile = function(n,size) {
 	    this.selected = which_tile;
 	    which_tile.activate();
 	},
+	debug: function(obj,string){
+	    s = "<h3>debuger</h3>";
+	    s = s + "<p>" + JSON.stringify(t.states) + "</p>";
+	    if ( t.selected ) {
+		s = s + "<p>" + JSON.stringify(t.selected) + "</p>";
+	    }
+	    if (obj) {
+		s = s + "<p>" + JSON.stringify(obj) + "</p";
+	    }
+	    if (string) {
+		s = s + "<p>" + string + "</p";
+	    }
+	    $("#debuger").html(s); 
+	},
 	deselect: function(which_tile){
 	    this.selected = null;
 	    which_tile.deactivate();
@@ -57,20 +71,20 @@ var tile = function(n,size) {
 	check_placement: function(row,col,pos){
 	    a = t.position_penetrating(pos);
 	    if ( row == 0 && a[0] == 1) {
-		console.log("In first row and penetrating north!" + " at angle : " + pos );
+		t.debug("In first row and penetrating north!" + " at angle : " + pos );
 		return false;
 	    }
 	    
 	    if ( row == t.n-1 && a[2] == 1) {
-		console.log("In last row and penetrating south!" + " at angle : " + pos); 
+		t.debug("In last row and penetrating south!" + " at angle : " + pos); 
 		return false;
 	    }
 	    if ( col == 0 && a[3] == 1) {
-		console.log("In first column and penetrating west!" + " at angle : " + pos);
+		t.debug("In first column and penetrating west!" + " at angle : " + pos);
 		return false;
 	    }
 	    if ( col == t.n-1 && a[1] == 1) {
-		console.log("In last column an penetrating east!" + " at angle : " + pos);
+		t.debug("In last column an penetrating east!" + " at angle : " + pos);
 		return false;
 	    }
 	    
@@ -79,7 +93,7 @@ var tile = function(n,size) {
 		if ( north.angle != 6 ) {
 		    b = t.position_penetrating(north.angle);
 		    if ( b[2] == 1 || a[0] == 1 ) {
-			console.log("On my north is tile which is not at 6 position and I penetrating north!"  + " at angle : " + pos);
+			t.debug("On my north is tile which is not at 6 position and I penetrating north!"  + " at angle : " + pos);
 			return false;
 		    }
 		}
@@ -90,7 +104,7 @@ var tile = function(n,size) {
 		if (south.angle != 2 ){
 		    b = t.position_penetrating(south.angle);
 		    if ( b[0] == 1 || a[2] == 1) {
-			console.log("On my south is tile which is not at 2 position and I penetrating south! "  + " at angle : " + pos);
+			t.debug("On my south is tile which is not at 2 position and I penetrating south! "  + " at angle : " + pos);
 			return false;
 		    }
 		}
@@ -101,7 +115,7 @@ var tile = function(n,size) {
 		if (west.angle != 4 ) {
 		    b = t.position_penetrating(west.angle);
 		    if ( b[1] == 1 || a[3] == 1) {
-			console.log("On my west is tile which is not at 4 position and I penetrating west!"  + " at angle : " + pos);
+			t.debug("On my west is tile which is not at 4 position and I penetrating west!"  + " at angle : " + pos);
 			return false;
 		    }
 		}
@@ -111,7 +125,7 @@ var tile = function(n,size) {
 		if (east.angle != 0){
 		    b = t.position_penetrating(east.angle);
 		    if ( b[3] == 1 || a[1] == 1) {
-			console.log("On my east is tile which is not at 0 position and I penetrating east!"  + " at angle : " + pos );
+			t.debug("On my east is tile which is not at 0 position and I penetrating east!"  + " at angle : " + pos );
 			return false;
 		    }
 		}
@@ -150,6 +164,7 @@ var tile = function(n,size) {
 		return;
 	    }
 	    if (st == 4 ) {
+		t.selected.deactivate();
 		t.states.change(0);
 		return;
 	    }
@@ -360,7 +375,9 @@ var tile = function(n,size) {
 	    }
 	},
 	mouse_down: function(e){
+	    t.debug();
 	    mouse = t.xy_colrow(e);
+	    t.debug(mouse);
 	    if (mouse == null){
 		return;
 	    }
@@ -369,11 +386,11 @@ var tile = function(n,size) {
 
 	    if (tile_at_click != null ) {
 		/* STATE 1 */
-		console.log(mouse.s);
+		t.debug(mouse.s);
 		if ( st == 1 && tile_at_click.id == t.selected.id  ){
 		    var old_angle = tile.angle;
 		    var new_angle = tile_at_click.rotate_pos(tile.angle,mouse.s);
-		    console.log("Old angle" + old_angle +  "New Angle" + new_angle);
+		    t.debug("Old angle" + old_angle +  "New Angle" + new_angle);
 		    var steps = 1;
 		    while(old_angle != new_angle && steps < 9 ) {
 			if (t.check_placement(tile_at_click.row,tile_at_click.col,new_angle) == false ) {
@@ -388,7 +405,7 @@ var tile = function(n,size) {
 		    }
 		}
 		/* STATE 0 */
-		if ( st == 0 && tile_at_click.color == t.states.on_move ) {
+		if ( st == 0 && tile_at_click.color == t.states.on_move && t.can_be_activate(title_at_click.row,title_at_click.col,title_at_click.angle) ) {
 		    t.states.change(2);
 		    t.select(tile_at_click);
 		    var new_angle = tile_at_click.rotate_pos(tile.angle,mouse.s);
@@ -409,11 +426,11 @@ var tile = function(n,size) {
 		}
 		/* STATE 4 */
 		if ( st == 4 && tile_at_click.id  == t.selected.id ) {
-	    	    console.log(tile_at_click);
-		    console.log(mouse.s);
-		    console.log("State " + st);
+	    	    t.debug(tile_at_click);
+		    t.debug(mouse.s);
+		    t.debug("State " + st);
 		    var new_angle = tile_at_click.rotate_pos(tile_at_click.angle,mouse.s);
-		    console.log("New angle" + new_angle);
+		    t.debug("New angle" + new_angle);
 		    if (t.check_placement(tile_at_click.row,tile_at_click.col,new_angle) == false ) {
 			return;
 		    }

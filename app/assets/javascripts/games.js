@@ -67,70 +67,11 @@ var tile = function(n,size) {
 	},
 	// returning blocking tiles as array of 0,1 in following order (North, East, South , West ) or ( row -1 , col + 1, row + 1, col -1 )
 	check_placement: function(row,col,pos){
-	    return true;
-	    a = t.position_penetrating(pos);
-	    if ( row == 0 && a[0] == 1) {
-		t.debug("In first row and penetrating north!" + " at angle : " + pos );
+	    if (t.table.posible_placements(row,col)[pos] == 1){
+		return true;
+	    } else {
 		return false;
 	    }
-	    
-	    if ( row == t.n-1 && a[2] == 1) {
-		t.debug("In last row and penetrating south!" + " at angle : " + pos); 
-		return false;
-	    }
-	    if ( col == 0 && a[3] == 1) {
-		t.debug("In first column and penetrating west!" + " at angle : " + pos);
-		return false;
-	    }
-	    if ( col == t.n-1 && a[1] == 1) {
-		t.debug("In last column an penetrating east!" + " at angle : " + pos);
-		return false;
-	    }
-	    
-	    if ( row != 0 && t.table[row-1][col] != null ){
-		north = t.table[row-1][col];
-		if ( north.angle != 6 ) {
-		    b = t.position_penetrating(north.angle);
-		    if ( b[2] == 1 || a[0] == 1 ) {
-			t.debug("On my north is tile which is not at 6 position and I penetrating north!"  + " at angle : " + pos);
-			return false;
-		    }
-		}
-	    }
-	    
-	    if (row != t.n-1 && t.table[row+1][col] != null ){
-		south = t.table[row+1][col];
-		if (south.angle != 2 ){
-		    b = t.position_penetrating(south.angle);
-		    if ( b[0] == 1 || a[2] == 1) {
-			t.debug("On my south is tile which is not at 2 position and I penetrating south! "  + " at angle : " + pos);
-			return false;
-		    }
-		}
-	    }
-
-	    if (col != 0 && t.table[row][col-1] != null ){
-		west = t.table[row][col-1];
-		if (west.angle != 4 ) {
-		    b = t.position_penetrating(west.angle);
-		    if ( b[1] == 1 || a[3] == 1) {
-			t.debug("On my west is tile which is not at 4 position and I penetrating west!"  + " at angle : " + pos);
-			return false;
-		    }
-		}
-	    }
-	    if (col != t.n-1 && t.table[row][col+1] != null ){
-		east = t.table[row][col+1];
-		if (east.angle != 0){
-		    t.debug("East angle " + east.angle);
-		    b = t.position_penetrating(east.angle);
-		    if ( b[3] == 1 || a[1] == 1) {
-			t.debug("On my east is tile which is not at 0 position and I penetrating east!"  + " at angle : " + pos );
-			return false;
-		    }
-		}
-	    }
-	    return true;
 	},
 	xy_colrow: function(e){
 	    pos = {};
@@ -377,6 +318,7 @@ var tile = function(n,size) {
 	    if (mouse == null){
 		return;
 	    }
+	    t.debug("Posible placements " + t.table.posible_placements(mouse.row,mouse.col));
 	    tile_at_click = t.table[mouse.row][mouse.col];
 	    var st = t.states.state;
 

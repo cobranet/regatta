@@ -6,6 +6,104 @@ function create_table(n,size){
 	    g[i][k] = null;
 	}
     };
+    /* Every tile have four sides.. side can be 0 - empty or have convex side , 1 - full but not pentrating, 2 penetrating inside tile
+       we put them in array ( North, East, South, West )
+       We split checking in two functions ... by row and by column .. and join result in third
+   */
+    g.touch_by_row = function(row){
+	var arr = [0,0];   // we asume that north and south position is empty
+	var north,south;
+	if ( row == 0 ) {
+	    arr[0] = 1;
+	} else {
+	    if (row == n-1){
+		arr[1] = 1;
+	    } else {
+		north = g[row-1][col];
+		south = g[row+1][col];
+		
+		if (north != null){
+		    if (north.angle != 6 ) {
+			if ( north.position_penetrating()[2] == 1) {
+			    arr[0] = 2;
+			} else {
+			    arr[0] = 1;
+			}
+			   
+		    }
+		}
+		if (south != null){
+		    if (south.angle != 2 ) {
+			if ( north.position_penetrating()[0] == 1) {
+			    arr[1] = 2;
+			} else {
+			    arr[1] = 1;
+			}
+		    }
+		}
+    }
+	}
+	return arr;
+    };
+    g.touch_by_col = function(col){
+	var arr = [0,0];   // we asume that east and west position is empty
+	var east,west;
+	if ( col == 0 ) {
+	    arr[0] = 1;
+	} else {
+	    if (col == n-1){
+		arr[1] = 1;
+	    } else {
+		east = g[row][col+1];
+		west = g[row][col-1];
+		if (east != null){
+		    if (east.angle != 0 ) {
+			if ( east.position_penetrating()[3] == 1) {
+			    arr[0] = 2;
+			} else {
+			    arr[0] = 1;
+			}
+			   
+		    }
+		}
+		if (west != null){
+		    if (west.angle != 4 ) {
+			if ( west.position_penetrating()[1] == 1) {
+			    arr[1] = 2;
+			} else {
+			    arr[1] = 1;
+			}
+		    }
+		}
+	    }
+	}
+	return arr;
+    };
+    g.touch_by = function(row,col){
+	var arr = [];
+	var a = g.touch_by_row(row);
+	var b = g.touch_by_col(col);
+	arr[0] = a[0];
+	arr[1] = b[0];
+	arr[2] = a[1];
+	arr[3] = b[1];
+	return a[0];
+    },
+    g.posible_placements=function(row,col){
+	/* possible placement if there is 2 */
+	var on_two = [ [0,0,1,0, 0,0,0,0],
+		       [0,0,0,0, 1,0,0,0],
+		       [0,0,0,0, 0,0,1,0],
+		       [1,0,0,0, 0,0,0,0]];
+	/* possible placment if there is 1 */
+	var on_one = [ [1,0,1,0, 1,0,1,1],
+	               [1,1,1,0, 1,0,1,0],
+		       [1,1,1,0, 1,0,1,0],
+		       [1,0,1,0, 1,1,1,0]];
+	var touch = g.touch_by(row,col);
+	
+    };
+	    
     g.draw_grid = function(){
 	    for(var i=0; i < 8; i++){
 		for(var k=0; k < 8; k++){

@@ -28,7 +28,7 @@
 *** DONE check if tile can't be activate
 *** TODO On game JSON check validity
 *** DONE Sound when rotate
-*** TODO Sound when placed
+*** DONE Sound when placed
 *** DONE not rotate when click on other tile
 *** DONE Refactor game states .. 
 *** DONE Make outer div actual svg size
@@ -36,10 +36,11 @@
 *** TODO Check winning condition
 *** TODO When slide click on posible location is same as done
 *** DONE Make outline svg same size 
+*** TODO Can't slide in active position
 * Insights
 ** There is 8 possible position inside cell.
 ** Active positions is odd .. inactive is even and when placing tile must be in active position unless there is no active position..
 ** When start slide action you must position tile in unactive position ... 
 ** When do slide you must check only move in slide direction ... you move other tiles in othoganal if they can..?! .. problem!?
 ** Slided... Tile is slided (changed position ) .. Must finish in regular position... 
-
+** If you rotate active place you must slide !?

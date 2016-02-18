@@ -47,18 +47,6 @@ var tiles = function(parent_id,size,colors){
 		    }
 		    return p;
 		},
-		position_penetrating: function() {
-		    var arr =   [[0,0,0,0], 
-				 [1,0,1,1],
-				 [0,0,0,0],
-				 [1,1,0,1],
-				 [0,0,0,0],
-				 [1,1,1,0],
-				 [0,0,0,0],
-				 [0,1,1,1]];
-		    return arr[this.angle];
-
-		},
 		activate: function(){
 		    this.active = 1;
 		    this.redraw();

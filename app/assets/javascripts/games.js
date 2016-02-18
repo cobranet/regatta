@@ -35,8 +35,8 @@ var tile = function(n,size) {
 	    which_tile.deactivate();
 	},
 	table: create_table(8,size),
-	tiles: tiles("#tiles",30),
-	states: states('#hint','#done'),
+	tiles: tiles("#tiles",30,["white","black"]),
+ 	states: states('#hint','#done'),
 	rotate_pos: function(pos,smer){
 		    p = pos + smer;
 		    if (p>7) {
@@ -48,6 +48,7 @@ var tile = function(n,size) {
 		    return p;
 	},
 	can_be_activate: function(row,col,angle){
+	    return true; // Fix that
 	    if (t.check_placement(row,col,t.rotate_pos(angle,1)) == true) {
 		return true;
 	    }
@@ -58,17 +59,15 @@ var tile = function(n,size) {
 	},
 	kick: function(row,col,s,from_where){ 
 	    if (t.table[row][col] != null){
-		var a = t.position_penetrating(t.table[row][col].angle);
+		var a = t.table[row][col].position_penetrating();
 		if (a[from_where] == 1) {
 		    t.table[row][col].rotate(s);
 		}
 	    }
 	},
 	// returning blocking tiles as array of 0,1 in following order (North, East, South , West ) or ( row -1 , col + 1, row + 1, col -1 )
-	position_penetrating: function(pos) {
-	    return arr[pos];
-	},
 	check_placement: function(row,col,pos){
+	    return true;
 	    a = t.position_penetrating(pos);
 	    if ( row == 0 && a[0] == 1) {
 		t.debug("In first row and penetrating north!" + " at angle : " + pos );
@@ -123,6 +122,7 @@ var tile = function(n,size) {
 	    if (col != t.n-1 && t.table[row][col+1] != null ){
 		east = t.table[row][col+1];
 		if (east.angle != 0){
+		    t.debug("East angle " + east.angle);
 		    b = t.position_penetrating(east.angle);
 		    if ( b[3] == 1 || a[1] == 1) {
 			t.debug("On my east is tile which is not at 0 position and I penetrating east!"  + " at angle : " + pos );
@@ -155,7 +155,7 @@ var tile = function(n,size) {
 	    var st = t.states.state;
 	    if (st == 1 || st == 5  ) {
 		st = 0;
-		t.deselect(t.selected);
+		t.selected.deactivate();
 		t.states.change(0);
 		return;
 	    }
@@ -184,7 +184,7 @@ var tile = function(n,size) {
 	    for ( var angle = 0; angle <= 7; angle++){
 		if(t.check_placement(pos.row,pos.col,angle)){
 		    t1 = t.tiles.create(pos.row,pos.col,angle,what);
-		    t1.draw();
+		    t1.place();
 		    t.table[pos.row][pos.col] = t1;
 		    t.states.change(1);
 		    t.select(t1);
@@ -210,7 +210,7 @@ var tile = function(n,size) {
 		return true; // this is ok .. 
 	    }
 
-	    if ( s == 'N' && where.col  == 0 ) {
+	    if ( s == 'N' && where.col  == 7 ) {
 		return true; // this is ok .. 
 	    }
 	    
@@ -228,18 +228,13 @@ var tile = function(n,size) {
 	    if (tt1 ==  null ){
 		return true; /// ok 
 	    }
-	    arr = position_penetrating(tt1.pos);
+	    t.debug("Angle in can_slide " + tt1.angle);
+	    arr = t.position_penetrating(tt1.angle);
 	    if (pos == 0 && s == 'E' && arr[3] == 0 ){
 		return true; 
 	    }
 	    return false; /// if not true .. then is false
 	    
-	},
-	is_active: function(pos){
-	    if ( pos % 2  == 0 ){
-		return false;
-	    }
-	    return true;
 	},
 	slide_east: function (from,to){
 	    var k = 1;
@@ -270,7 +265,7 @@ var tile = function(n,size) {
 	    var k = 1;
 	    while(from.row - k >= to.row){
 
-		if ( t.can_slide({row: from.row - k ,col: from.col} ,from.angle,'N')){
+		if ( t.can_slide({row: from.row - k ,col: from.col} ,from.angle,'N')  ){
 		    ;
 		} else {
 		    alert("can't slide");
@@ -347,8 +342,9 @@ var tile = function(n,size) {
 	slide_to:function(from,to){
  	    tt = t.table[from.row][from.col];
 	    var angle = tt.angle;
-	    if(t.is_active(tt.angle)  ){
-		return; // must bi in inactive position
+	    if(tt.is_active() == true ){
+		t.debug("Cant slide if active");
+		return; 
             }
 	    if ( from.row != to.row && from.col != to.col) {
 		return; //cant slide diagonaly
@@ -405,7 +401,7 @@ var tile = function(n,size) {
 		    }
 		}
 		/* STATE 0 */
-		if ( st == 0 && tile_at_click.color == t.states.on_move && t.can_be_activate(title_at_click.row,title_at_click.col,title_at_click.angle) ) {
+		if ( st == 0 && tile_at_click.color == t.states.on_move && t.can_be_activate(tile_at_click.row,tile_at_click.col,tile_at_click.angle) ) {
 		    t.states.change(2);
 		    t.select(tile_at_click);
 		    var new_angle = tile_at_click.rotate_pos(tile.angle,mouse.s);
@@ -447,7 +443,7 @@ var tile = function(n,size) {
 		    return;
 		}
 	    
-		if (st == 0 && tile_at_click != null && tile_at_click == t.states.on_move && t.is_active(tile_at_click.pos) ){
+		if (st == 0 && tile_at_click != null && tile_at_click == t.states.on_move && tile_at_click.is_active()  ){
 		    t.slide(mouse);
 		}
 	    

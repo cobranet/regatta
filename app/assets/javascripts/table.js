@@ -77,7 +77,6 @@ function create_table(n,size){
 		}
 	    }
 	}
-	console.log(arr);
 	return arr;
     };
     g.touch_by = function(row,col){
@@ -100,24 +99,20 @@ function create_table(n,size){
 	/* possible placment if there is 1 */
 	var on_one = [ [1,0,1,0, 1,0,1,1],
 	               [1,1,1,0, 1,0,1,0],
-		       [1,1,1,0, 1,0,1,0],
+		       [1,0,1,1, 1,0,1,0],
 		       [1,0,1,0, 1,1,1,0]];
 	var touch = g.touch_by(row,col);
-	console.log(touch);
 	var posible = [1,1,1,1,1,1,1,1];
 	
 	for (var i = 0; i < 4; i++){
 	    if (touch[i] == 2 ) {
-		console.log('in 2');
 		for ( var k = 0; k < 8; k++){
 		    if(on_two[i][k] == 0){
-			console.log(" In k " + k);
 			posible[k] = 0;
 		    }
 		}
 	    }
 	    if (touch[i] == 1 ) {
-		console.log('in 1');
 		for ( k = 0; k < 8; k++){
 		    if(on_one[i][k] == 0){
 			posible[k] = 0;

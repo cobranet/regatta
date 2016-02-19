@@ -18,7 +18,7 @@ var states = function (hint_id,done_id) {
 	state: 0,
 	on_move: 1,
 	check_win: function(){
-	    console.log(tile);
+	    ; // do that
 	},
 	next_player: function(){
 	    if (this.on_move == 1 ) {
@@ -79,14 +79,10 @@ var states = function (hint_id,done_id) {
 		this.next_player();
 	    }
 	    if (this.state == 4 && to == 0) {
-		console.log("Player " + this.on_move);
 		this.next_player();
-		console.log("Player " + this.on_move);
 	    }
 	    if ( (this.state == 1 || this.state) == 5 && to == 0 ){
-		console.log("Player " + this.on_move);
 		this.next_player();
-		console.log("Player " + this.on_move);
 	    }
 	    if(this.state == 2 && to == 6){
 		alert("what I am doing here");

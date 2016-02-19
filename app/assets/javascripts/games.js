@@ -48,7 +48,6 @@ var tile = function(n,size) {
 		    return p;
 	},
 	can_be_activate: function(row,col,angle){
-	    return true; // Fix that
 	    if (t.check_placement(row,col,t.rotate_pos(angle,1)) == true) {
 		return true;
 	    }
@@ -57,9 +56,12 @@ var tile = function(n,size) {
 	    }
 	    return false;
 	},
-	kick: function(row,col,s,from_where){ 
+	// What the fuck is from where here ...
+	
+	kick: function(row,col,s,from_where){
 	    if (t.table[row][col] != null){
 		var a = t.table[row][col].position_penetrating();
+		t.debug("KICK : " + a + " From where ???" + from_where  );
 		if (a[from_where] == 1) {
 		    t.table[row][col].rotate(s);
 		}
@@ -151,11 +153,11 @@ var tile = function(n,size) {
 		return true; // this is ok .. 
 	    }
 
-	    if ( s == 'N' && where.col  == 7 ) {
+	    if ( s == 'N' && where.row  == 0 ) {
 		return true; // this is ok .. 
 	    }
 	    
-	    // col is not 7 and not 0 
+	    // col or row is not 7 and not 0  
 	    if (s == 'E' ) {
 		tt1 = t.table[where.row][where.col + 1];
 	    } else if ( s == 'W') {
@@ -169,7 +171,6 @@ var tile = function(n,size) {
 	    if (tt1 ==  null ){
 		return true; /// ok 
 	    }
-	    t.debug("Angle in can_slide " + tt1.angle);
 	    arr = t.position_penetrating(tt1.angle);
 	    if (pos == 0 && s == 'E' && arr[3] == 0 ){
 		return true; 
@@ -219,8 +220,10 @@ var tile = function(n,size) {
 	    var k = 1;
 	    while(from.row - k >= to.row){
 		from.move_north(k);
-		t.kick(from.row - k  , from.col + 1,1);
-		t.kick(from.row - k  , from.col - 1,3);
+		console.log("Slide North");
+		console.log(from.row - k, from.col + 1 );
+		t.kick(from.row - k  , from.col + 1,1,3);
+		t.kick(from.row - k  , from.col - 1,-1,1);
 		k++;
 	    }
 	    from.col = to.col;

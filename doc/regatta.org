@@ -17,7 +17,7 @@
 *** DONE Hide DONE if placement state
 *** DONE In state 1 can rotate anywhere but can stay in iregular position
 *** DONE I need active tile .. Change color for active
-*** TODO FIX West kick north 
+*** DONE FIX West kick north 
 *** TODO Save to database
 *** DONE Block placement if invalid
 *** TODO Make ENTER to do DONE

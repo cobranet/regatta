@@ -1,28 +1,25 @@
 function create_table(n,size){
-    g = [];
-    for (var i = 0; i < n ; i++){
+    var g = [];
+    var k,i;
+    for (i = 0; i < n ; i++){
 	g[i] = [];
-	for (var k = 0; k < n; k++){
+	for (k = 0; k < n; k++){
 	    g[i][k] = null;
 	}
-    };
+    }    
     g.count_active = function(who){
-	var i,k;
 	var count = 0;
 	var at;
 	for (i=0;i<n;i++){
 	    for (k=0;k<n;k++){
 		at = g[i][k];
-		if (at != null) {
-		    ;
-		}
 		if (at != null &&  at.color == who && at.is_active() == 1 ) {
 		    count++;
 		}
 	    }
 	}
 	return count;
-    }
+    };
     
     /* Every tile have four sides.. side can be 0 - empty or have convex side , 1 - full but not pentrating, 2 penetrating inside tile
        we put them in array ( North, East, South, West )
@@ -106,10 +103,9 @@ function create_table(n,size){
 	arr[2] = a[1];
 	arr[3] = b[1];
 	return arr;
-    },
+    };
     g.posible_placements=function(row,col){
 	/* possible placement if there is 2 */
-	var k;
 	var on_two = [ [0,0,1,0, 0,0,0,0],
 		       [0,0,0,0, 1,0,0,0],
 		       [0,0,0,0, 0,0,1,0],
@@ -122,9 +118,9 @@ function create_table(n,size){
 	var touch = g.touch_by(row,col);
 	var posible = [1,1,1,1,1,1,1,1];
 	
-	for (var i = 0; i < 4; i++){
+	for (i = 0; i < 4; i++){
 	    if (touch[i] == 2 ) {
-		for ( var k = 0; k < 8; k++){
+		for ( k = 0; k < 8; k++){
 		    if(on_two[i][k] == 0){
 			posible[k] = 0;
 		    }
@@ -142,8 +138,8 @@ function create_table(n,size){
     };
 	    
     g.draw_grid = function(){
-	    for(var i=0; i < 8; i++){
-		for(var k=0; k < 8; k++){
+	    for(i=0; i < 8; i++){
+		for(k=0; k < 8; k++){
 		d3.select("#tiles").append("path")
 			.attr("d",this.create_grid_path(i*size,k*size,size))
 		    .attr("stroke","black")
@@ -153,7 +149,7 @@ function create_table(n,size){
 	    }
     };
     g.create_grid_path = function(x,y,size){
-	    d = "M " + x + " " + y + "  " + 
+	    var d = "M " + x + " " + y + "  " + 
 	    "L "  + x + " " + (y+size) + " " +
 	    "L "  + (x +size) + " " + (y+size) + " " +
 		"L " +(x+size) + " " + y + " " +

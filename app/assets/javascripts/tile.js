@@ -1,8 +1,9 @@
+/*global $,d3,Audio */
 /* regatta Tile on table
    Need to know every thing about self 
 */
-var tiles = function(parent_id,size,colors){
-    var colors = colors;
+var tiles = function(parent_id,size,all_colors){
+    var colors = all_colors;
     var ids = 0;
     var audios = {
 	rotate: new Audio('rotate.wav'),
@@ -13,7 +14,7 @@ var tiles = function(parent_id,size,colors){
 	parent_id: parent_id,
 	create: function(row,col,angle,color){
 	    ids ++;
-	    tile = {
+	    var tile = {
 		row: row, // 0 - 7
 		col: col,  // 
 		color: color, // -- 0 or 1
@@ -27,7 +28,7 @@ var tiles = function(parent_id,size,colors){
 		    return true;
 		},
 		create_path: function(x,y,size){
-		    d = "M " + x + " " + y + " " +
+		    var d = "M " + x + " " + y + " " +
 			"C " + (x+size/3) + " " + (y+2*size/3) + " " +
 			(x+size/3) + " " + (y+size-size/3)  + " " +
 	       		x + " " + (y+size) + " " + 
@@ -38,7 +39,7 @@ var tiles = function(parent_id,size,colors){
 		    return d;
 		},
 		rotate_pos: function(pos,smer){
-		    p = pos + smer;
+		    var p = pos + smer;
 		    if (p>7) {
 			return 0;
 		    }
@@ -93,9 +94,10 @@ var tiles = function(parent_id,size,colors){
 		    var r = s*45;
 		    var rotation = this.angle * 45;
 		    this.angle = this.rotate_pos(this.angle,s);
+		    rotation = rotation + r;
 		    d3.select("#t" + this.id).transition().delay(300)
 			.attr("transform",
-			      "rotate("+ (rotation+=r) +","+
+			      "rotate("+ rotation +","+
 			      (this.col*size+size/2) + ","+
 			      (this.row*size+size/2) +")");
 		    this.redraw();

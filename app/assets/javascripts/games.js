@@ -1,3 +1,4 @@
+/*global $,create_table,tiles,states,alert */
 var tile = function(n,size) {
     var arr =
 	[[], 
@@ -17,7 +18,7 @@ var tile = function(n,size) {
 	    which_tile.activate();
 	},
 	debug: function(obj,string){
-	    s = "<h3>debuger</h3>";
+	    var s = "<h3>debuger</h3>";
 	    s = s + "<p>" + JSON.stringify(t.states) + "</p>";
 	    if ( t.selected ) {
 		s = s + "<p>" + JSON.stringify(t.selected) + "</p>";
@@ -38,7 +39,7 @@ var tile = function(n,size) {
 	tiles: tiles("#tiles",30,["white","black"]),
  	states: states('#hint','#done','#new_move'),
 	rotate_pos: function(pos,smer){
-		    p = pos + smer;
+		    var p = pos + smer;
 		    if (p>7) {
 			return 0;
 		    }
@@ -71,12 +72,11 @@ var tile = function(n,size) {
 	check_placement: function(row,col,pos){
 	    if (t.table.posible_placements(row,col)[pos] == 1){
 		return true;
-	    } else {
-		return false;
 	    }
+	    return false;
 	},
 	xy_colrow: function(e){
-	    pos = {};
+	    var pos = {};
 	    pos.x = (e.pageX - $('#tiles').offset().left) / t.size;
 	    pos.y = (e.pageY - $('#tiles').offset().top) / t.size;
 	    pos.col = Math.floor(pos.x);
@@ -127,8 +127,10 @@ var tile = function(n,size) {
 	},
 	mouse_place: function(e){
 	    var what = t.states.on_move;
-	    pos = t.xy_colrow(e);
-	    for ( var angle = 0; angle <= 7; angle++){
+	    var angle;
+	    var t1;
+	    var pos = t.xy_colrow(e);
+	    for ( angle = 0; angle <= 7; angle++){
 		if(t.check_placement(pos.row,pos.col,angle)){
 		    t1 = t.tiles.create(pos.row,pos.col,angle,what);
 		    t1.place();
@@ -141,7 +143,8 @@ var tile = function(n,size) {
 	    
 	},
 	can_slide: function(where,pos,s){
-	    tt = t.table[where.row][where.col];
+	    var tt = t.table[where.row][where.col];
+	    var tt1;
 	    if ( tt != null ){
 		return false;
 	    }
@@ -193,17 +196,14 @@ var tile = function(n,size) {
 	slide_east: function (from,to){
 	    var k = 1;
 	    while(from.col + k <= to.col){
-		if ( t.can_slide({row: from.row,col: from.col + k} ,from.angle,'E')){
-		    ;
-		} else {
-		    alert("can't slide");
+		if (  !t.can_slide({row: from.row,col: from.col + k} ,from.angle,'E')){
 		    return;
 		}
 		k++;
 	    }
 	    t.table[from.row][from.col] = null;
 	    t.table[to.row][to.col] = from;
-	    var k = 1;
+	    k = 1;
 	    while(from.col + k <= to.col){
 		from.move_east(k);
 		t.kick(to.row + 1 , from.col + k,1,0);
@@ -211,7 +211,7 @@ var tile = function(n,size) {
 		k++;
 	    }
 	    from.col = to.col;
-	    from.row = to.row
+	    from.row = to.row;
 	    from.redraw();
 	    
 	},
@@ -219,9 +219,7 @@ var tile = function(n,size) {
 	    var k = 1;
 	    while(from.row - k >= to.row){
 
-		if ( t.can_slide({row: from.row - k ,col: from.col} ,from.angle,'N')  ){
-		    ;
-		} else {
+		if ( !t.can_slide({row: from.row - k ,col: from.col} ,from.angle,'N')  ){
 		    alert("can't slide");
 		    return;
 		}
@@ -229,7 +227,7 @@ var tile = function(n,size) {
 	    }
 	    t.table[from.row][from.col] = null;
 	    t.table[to.row][to.col] = from;
-	    var k = 1;
+	    k = 1;
 	    while(from.row - k >= to.row){
 		from.move_north(k);
 		t.kick(from.row - k  , from.col + 1,1,3);
@@ -237,7 +235,7 @@ var tile = function(n,size) {
 		k++;
 	    }
 	    from.col = to.col;
-	    from.row = to.row
+	    from.row = to.row;
 	    from.redraw();
 	    
 	},
@@ -245,17 +243,16 @@ var tile = function(n,size) {
 	    var k = 1;
 	    while(from.row + k <= to.row){
 
-		if ( t.can_slide({row: from.row + k ,col: from.col} ,from.angle,'S')){
-		    ;
-		} else {
+		if (!t.can_slide({row: from.row + k ,col: from.col} ,from.angle,'S')){
 		    alert("can't slide");
 		    return;
+
 		}
 		k++;
 	    }
 	    t.table[from.row][from.col] = null;
 	    t.table[to.row][to.col] = from;
-	    var k = 1;
+	    k = 1;
 	    while(from.row + k <= to.row){
 		from.move_south(k);
 		t.kick(from.row + k  , from.col + 1,-1,3);
@@ -263,16 +260,14 @@ var tile = function(n,size) {
 		k++;
 	    }
 	    from.col = to.col;
-	    from.row = to.row
+	    from.row = to.row;
 	    from.redraw();
 	    
 	},
 	slide_west: function (from,to){
 	    var k = 1;
 	    while(from.col - k >= to.col){
-		if ( t.can_slide({row: from.row,col: from.col - k} ,from.angle,'W')){
-		    ;
-		} else {
+		if ( !t.can_slide({row: from.row,col: from.col - k} ,from.angle,'W')){
 		    alert("can't slide" + (from.col - k));
 		    return;
 		}
@@ -281,7 +276,7 @@ var tile = function(n,size) {
 	    t.table[from.row][from.col] = null;
 	    t.table[to.row][to.col] = from;
 	    
-	    var k = 1;
+	    k = 1;
 	    while(from.col - k >= to.col){
 		from.move_west(k);
 		t.kick(to.row + 1 , from.col - k,-1,0);
@@ -289,12 +284,12 @@ var tile = function(n,size) {
 		k++;
 	    }
 	    from.col = to.col;
-	    from.row = to.row
+	    from.row = to.row;
 	    from.redraw();
 	    
 	},
 	slide_to:function(from,to){
- 	    tt = t.table[from.row][from.col];
+ 	    var tt = t.table[from.row][from.col];
 	    var angle = tt.angle;
 	    if(tt.is_active() == true ){
 		t.debug("Cant slide if active");
@@ -324,75 +319,85 @@ var tile = function(n,size) {
 		t.states.change(5);
 	    }
 	},
+	click_at_2: function(tile,side){
+	    var new_angle = tile.rotate_pos(tile.angle,side);
+	    if (t.check_placement(tile.row,tile.col,new_angle) === false ) {
+		    return;
+		}
+	    tile.rotate(side);
+	    return;
+	    
+	},
+	click_at_4: function(tile,side){
+	    var new_angle = tile.rotate_pos(tile.angle,side);
+
+	    if (t.check_placement(tile.row,tile.col,new_angle) == false ) {
+		return;
+	    }
+	    tile.rotate(side);
+	    return;
+	},
+	click_at_1: function(tile,side ){
+	    var old_angle,new_angle,s;
+	    old_angle = tile.angle;
+	    new_angle = tile.rotate_pos(tile.angle,side);
+	    t.debug("Old angle" + old_angle +  "New Angle" + new_angle);
+	    var steps = 1;
+	    while(old_angle != new_angle && steps < 9 ) {
+		if (t.check_placement(tile.row,tile.col,new_angle) == false ) {
+		    new_angle = tile.rotate_pos(new_angle,side);
+		    steps = steps + 1;
+		} else  {
+		    for( s = 0; s < steps; s++) {
+			tile.rotate(side);
+		    }
+		    return;
+		}
+	    }
+	},
+	click_on_tile: function(tile_at_click,side){
+	    var new_angle;
+	    var st = t.states.state;
+	    if ( st === 1 && tile_at_click.id === t.selected.id  ) {
+		t.click_at_1(tile_at_click,st,side);
+		}
+		if ( st == 0 && tile_at_click.color == t.states.on_move ) {
+		    t.states.change(2);
+		    t.select(tile_at_click);
+		    new_angle = tile_at_click.rotate_pos(tile.angle,side);
+		    if (t.check_placement(tile_at_click.row,tile_at_click.col,new_angle) == false ) {
+			return;
+		    }
+		    tile_at_click.rotate(side);
+		    return;
+		}
+	    if ( (st == 2 || st == 6) && tile_at_click.id  == t.selected.id ) {
+		    t.click_at_2(tile_at_click,side);
+		}
+		if ( st == 4 && tile_at_click.id  == t.selected.id ) {
+		    t.click_at_4(tile_at_click,side);
+	    	}
+	    
+	},
 	mouse_down: function(e){
-	    t.debug("White " + t.table.count_active(0));
-	    t.debug("Black " + t.table.count_active(1));		    
-	    mouse = t.xy_colrow(e);
+	    t.debug("White " + t.table.count_active(0) + " Black " + t.table.count_active(1) );
+	    
+	    var mouse = t.xy_colrow(e);
 	    if (mouse == null){
 		return;
 	    }
-	    tile_at_click = t.table[mouse.row][mouse.col];
+	    var tile_at_click = t.table[mouse.row][mouse.col];
 	    var st = t.states.state;
 
 	    if (tile_at_click != null ) {
-		/* STATE 1 */
-		t.debug(mouse.s);
-		if ( st == 1 && tile_at_click.id == t.selected.id  ){
-		    var old_angle = tile.angle;
-		    var new_angle = tile_at_click.rotate_pos(tile.angle,mouse.s);
-		    t.debug("Old angle" + old_angle +  "New Angle" + new_angle);
-		    var steps = 1;
-		    while(old_angle != new_angle && steps < 9 ) {
-			if (t.check_placement(tile_at_click.row,tile_at_click.col,new_angle) == false ) {
-			    new_angle = tile_at_click.rotate_pos(new_angle,mouse.s);
-			    steps = steps + 1;
-			} else  {
-			    for( var s = 0; s < steps; s++) {
-				tile_at_click.rotate(mouse.s);
-			    }
-			    return;
-			}
-		    }
-		}
-		/* STATE 0 */
-		if ( st == 0 && tile_at_click.color == t.states.on_move && t.can_be_activate(tile_at_click.row,tile_at_click.col,tile_at_click.angle) ) {
-		    t.states.change(2);
-		    t.select(tile_at_click);
-		    var new_angle = tile_at_click.rotate_pos(tile.angle,mouse.s);
-		    if (t.check_placement(tile_at_click.row,tile_at_click.col,new_angle) == false ) {
-			return;
-		    }
-		    tile_at_click.rotate(mouse.s);
-		    return;
-		}
-		/* STATE 2 */
-		if ( st == 2 && tile_at_click.id  == t.selected.id ) {
-		    var new_angle = tile_at_click.rotate_pos(tile.angle,mouse.s);
-		    if (t.check_placement(tile_at_click.row,tile_at_click.col,new_angle) == false ) {
-			return;
-		    }
-		    tile_at_click.rotate(mouse.s);
-		    return;
-		}
-		/* STATE 4 */
-		if ( st == 4 && tile_at_click.id  == t.selected.id ) {
-	    	    t.debug(tile_at_click);
-		    t.debug(mouse.s);
-		    t.debug("State " + st);
-		    var new_angle = tile_at_click.rotate_pos(tile_at_click.angle,mouse.s);
-		    t.debug("New angle" + new_angle);
-		    if (t.check_placement(tile_at_click.row,tile_at_click.col,new_angle) == false ) {
-			return;
-		    }
-		    tile_at_click.rotate(mouse.s);
-		    return;
-		}
-	    } else {
+		t.click_on_tile(tile_at_click,mouse.s);
+	    }  else {
 		if ( st == 0  ) {
 		    t.mouse_place(e);
 		    return;
 		}
 		if (st == 0 && tile_at_click != null && tile_at_click == t.states.on_move && tile_at_click.is_active()  ){
+		    alert("slide");
 		    t.slide(mouse);
 		}
 		if (st == 2) {

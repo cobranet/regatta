@@ -2,6 +2,7 @@
 #+AUTHOR Cobranet
 #+DATE 2016-01-27
 * TODO
+*** DONE JSLINT all !!!
 *** DONE Draw SVG tile
 *** DONE Rotate SVG tile 
 *** DONE Define table object
@@ -33,13 +34,14 @@
 *** DONE not rotate when click on other tile
 *** DONE Refactor game states .. 
 *** DONE Make outer div actual svg size
-*** TODO Make slide accept a orientation 0 - 3 NORTH, EAST,SOUTH , WEST and do that in one function...  
+*** DONE Make slide accept a orientation 0 - 3 NORTH, EAST,SOUTH , WEST and do that in one function...  
 *** TODO Make some sort of tests in command patern for game...
 *** TODO Check winning condition
 *** DONE When slide click on posible location is same as done
 *** DONE Make outline svg same size 
 *** TODO Can't slide in active position
 *** DONE Slide West can be finish if tile is 0 position even if there is penetrating tile on the end
+*** TODO Break mouse down by states
 * Insights
 ** There is 8 possible position inside cell.
 ** Active positions is odd .. inactive is even and when placing tile must be in active position unless there is no active position..

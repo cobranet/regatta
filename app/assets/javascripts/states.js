@@ -1,17 +1,17 @@
+/*global $, alert */
 var states = function (hint_id,done_id,new_move_id) {
-    states = [0,1,2,3,4,5,6,7,8];
-    done_state = [false,true, true, false,true, true]
-    new_move =   [false,false,false,false,false,true]
-    states_desc = [ "Expect placing tile or rotate your tile",
-		    "You are in rotate after place do as long as you want",
+    var done_state = [false,true, true, false,true, true];
+    var new_move =   [false,false,false,false,false,true];
+    var states_desc = [ "Expect placing tile or rotate your tile",
+		    "You are in rotate after place do as long as you want but must",
 		    "You are in rotate of existing tile which was in active position and you are now in inactive postition",
 		    "You are to choose where to slide",
 		    "You finished slide... Rotate in active stance then press done",
 		    "You finished slide at inactive position .. You can make another move! or press done",
-		    "You are in rotate of existing tile which was in active position and you are now in active postition",
+		    "You are in rotate of existing tile which was in active position and you are now in inactive postition",
 		    "You lose..",
-		    "You win!"
-		     ]
+		    "You win!",
+		  ];
     
     var s = {
 	hint_id: hint_id,
@@ -19,11 +19,8 @@ var states = function (hint_id,done_id,new_move_id) {
 	new_move_id: new_move_id,
 	state: 0,
 	on_move: 1,
-	check_win: function(){
-	    ; // do that
-	},
 	next_player: function(){
-	    if (this.on_move == 1 ) {
+	    if (this.on_move === 1 ) {
 		this.on_move = 0;
 		return;
 	    }
@@ -35,41 +32,41 @@ var states = function (hint_id,done_id,new_move_id) {
 	    $(hint_id).text(desc);
 	},
 	check: function(to){
-	    if ( to == 1 && this.state == 0 ) {
-		return true;
-	    };
-	    if ( to == 0 && this.state == 1 ) {
-		return true;
-	    };
-	    if ( to == 2 && this.state == 0 ) {
-		return true;
-	    };
-
-	    if ( to == 3 && this.state == 2 ) {
-		return true;
-	    };
-
-	    if ( to == 4 && this.state == 3 ) {
-		return true;
-	    };
-
-	    if ( to == 0 && this.state == 4 ) {
-		return true;
-	    };
-
-	    if ( to == 5 && this.state == 4 ) {
-		return true;
-	    };
-	    if ( to == 6 && this.state == 2 ){
+	    if ( to === 1 && this.state === 0 ) {
 		return true;
 	    }
-	    if ( to == 4 && this.state == 2 ){
+	    if ( to === 0 && this.state === 1 ) {
 		return true;
 	    }
-	    if ( to == 5 && this.state == 3 ){
+	    if ( to === 2 && this.state === 0 ) {
 		return true;
 	    }
-	    if ( to == 0 && this.state == 5 ){
+
+	    if ( to === 3 && this.state === 2 ) {
+		return true;
+	    }
+
+	    if ( to === 4 && this.state === 3 ) {
+		return true;
+	    }
+
+	    if ( to === 0 && this.state === 4 ) {
+		return true;
+	    }
+
+	    if ( to === 5 && this.state === 4 ) {
+		return true;
+	    }
+	    if ( to === 6 && this.state === 2 ){
+		return true;
+	    }
+	    if ( to === 4 && this.state === 2 ){
+		return true;
+	    }
+	    if ( to === 5 && this.state === 3 ){
+		return true;
+	    }
+	    if ( to === 0 && this.state === 5 ){
 		return true;
 	    }
 	    
@@ -79,21 +76,18 @@ var states = function (hint_id,done_id,new_move_id) {
 	    return false;
 	},
 	change: function(to) {
-	    if ( this.check(to) == false ) {
+	    if ( this.check(to) === false ) {
 		alert("No change to " + to );
 		return;
 	    }
-	    if (this.state == 1 && to == 0 ) {
+	    if (this.state === 1 && to === 0 ) {
 		this.next_player();
 	    } 
-	    if (this.state == 4 && to == 0) {
+	    if (this.state === 4 && to === 0) {
 		this.next_player();
 	    }
-	    if ( this.state == 5 && to == 0 ){
+	    if ( this.state === 5 && to === 0 ){
 		this.next_player();
-	    }
-	    if(this.state == 2 && to == 6){
-		alert("what I am doing here");
 	    }
 	    this.state = to;
 	    this.buttons(to);

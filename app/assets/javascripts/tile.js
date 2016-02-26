@@ -21,10 +21,10 @@ var tiles = function(parent_id,size,colors){
 		id: ids,
 		active: 0,
 		is_active: function(){
-		    if (this.pos % 2  == 0 ) {
-			return true;
+		    if (this.angle % 2  == 0 ) {
+			return false;
 		    }
-		    return false;
+		    return true;
 		},
 		create_path: function(x,y,size){
 		    d = "M " + x + " " + y + " " +

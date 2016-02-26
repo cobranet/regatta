@@ -36,7 +36,7 @@ var tile = function(n,size) {
 	},
 	table: create_table(8,size),
 	tiles: tiles("#tiles",30,["white","black"]),
- 	states: states('#hint','#done'),
+ 	states: states('#hint','#done','#new_move'),
 	rotate_pos: function(pos,smer){
 		    p = pos + smer;
 		    if (p>7) {
@@ -112,8 +112,12 @@ var tile = function(n,size) {
 		return;
 	    }
 	},
-	bind_done: function(){
+	new_move_action: function(){
+	    t.done_action();
+	},
+	bind_buttons: function(){
 	    $("#done").click(t.done_action);
+	    $("#new_move").click(t.new_move_action);
 	},
 	slide: function(pos){
 	    t.slide_from = pos;
@@ -171,12 +175,20 @@ var tile = function(n,size) {
 	    if (tt1 ==  null ){
 		return true; /// ok 
 	    }
-	    arr = t.position_penetrating(tt1.angle);
-	    if (pos == 0 && s == 'E' && arr[3] == 0 ){
+	    arr = tt1.position_penetrating();
+	    if ((s == 'E' && arr[3] != 1) || pos == 4   ){
+		return true; 
+	    }
+	    if ((s == 'W' && arr[1] != 1) || pos == 0 ){
+		return true; 
+	    }
+	    if ((s == 'N' && arr[2] != 1) ||  pos == 2 ){
+		return true; 
+	    }
+	    if ( (s == 'S' && arr[0] != 1) ||  pos == 6 ){
 		return true; 
 	    }
 	    return false; /// if not true .. then is false
-	    
 	},
 	slide_east: function (from,to){
 	    var k = 1;
@@ -220,8 +232,6 @@ var tile = function(n,size) {
 	    var k = 1;
 	    while(from.row - k >= to.row){
 		from.move_north(k);
-		console.log("Slide North");
-		console.log(from.row - k, from.col + 1 );
 		t.kick(from.row - k  , from.col + 1,1,3);
 		t.kick(from.row - k  , from.col - 1,-1,1);
 		k++;
@@ -263,7 +273,7 @@ var tile = function(n,size) {
 		if ( t.can_slide({row: from.row,col: from.col - k} ,from.angle,'W')){
 		    ;
 		} else {
-		    alert("can't slide");
+		    alert("can't slide" + (from.col - k));
 		    return;
 		}
 		k++;
@@ -315,13 +325,12 @@ var tile = function(n,size) {
 	    }
 	},
 	mouse_down: function(e){
-	    t.debug();
+	    t.debug("White " + t.table.count_active(0));
+	    t.debug("Black " + t.table.count_active(1));		    
 	    mouse = t.xy_colrow(e);
-	    t.debug(mouse);
 	    if (mouse == null){
 		return;
 	    }
-	    t.debug("Posible placements " + t.table.posible_placements(mouse.row,mouse.col));
 	    tile_at_click = t.table[mouse.row][mouse.col];
 	    var st = t.states.state;
 
@@ -375,23 +384,20 @@ var tile = function(n,size) {
 		    if (t.check_placement(tile_at_click.row,tile_at_click.col,new_angle) == false ) {
 			return;
 		    }
-	
 		    tile_at_click.rotate(mouse.s);
 		    return;
 		}
-
-		
 	    } else {
-	    
 		if ( st == 0  ) {
 		    t.mouse_place(e);
 		    return;
 		}
-	    
 		if (st == 0 && tile_at_click != null && tile_at_click == t.states.on_move && tile_at_click.is_active()  ){
 		    t.slide(mouse);
 		}
-	    
+		if (st == 2) {
+		    t.slide_to(t.selected,mouse);
+		}
 		if (st == 3 && tile_at_click == null ){
 		    t.slide_to(t.selected,mouse);
 		}
@@ -406,9 +412,9 @@ $( function(){
     tile = tile(8,30);
     tile.table.draw_grid();
     $('#tiles').mousedown(tile.mouse_down);
-    tile.bind_done();
+    tile.bind_buttons();
     tile.states.hint();
-    tile.states.done(false);
-    $("#tiles").attr("width",tile.size * tile.n);
-    $("#tiles").attr("height",tile.size * tile.n);
+    tile.states.buttons(false);
+    $("#tiles").attr("width",tile.size * tile.n + 3);
+    $("#tiles").attr("height",tile.size * tile.n + 3);
 } );

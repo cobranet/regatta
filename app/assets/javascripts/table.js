@@ -6,6 +6,24 @@ function create_table(n,size){
 	    g[i][k] = null;
 	}
     };
+    g.count_active = function(who){
+	var i,k;
+	var count = 0;
+	var at;
+	for (i=0;i<n;i++){
+	    for (k=0;k<n;k++){
+		at = g[i][k];
+		if (at != null) {
+		    ;
+		}
+		if (at != null &&  at.color == who && at.is_active() == 1 ) {
+		    count++;
+		}
+	    }
+	}
+	return count;
+    }
+    
     /* Every tile have four sides.. side can be 0 - empty or have convex side , 1 - full but not pentrating, 2 penetrating inside tile
        we put them in array ( North, East, South, West )
        We split checking in two functions ... by row and by column .. and join result in third

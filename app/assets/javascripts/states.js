@@ -1,6 +1,7 @@
-var states = function (hint_id,done_id) {
+var states = function (hint_id,done_id,new_move_id) {
     states = [0,1,2,3,4,5,6,7,8];
-    done_state = [false,true,true,false,true,false]
+    done_state = [false,true, true, false,true, true]
+    new_move =   [false,false,false,false,false,true]
     states_desc = [ "Expect placing tile or rotate your tile",
 		    "You are in rotate after place do as long as you want",
 		    "You are in rotate of existing tile which was in active position and you are now in inactive postition",
@@ -15,6 +16,7 @@ var states = function (hint_id,done_id) {
     var s = {
 	hint_id: hint_id,
 	done_id: done_id,
+	new_move_id: new_move_id,
 	state: 0,
 	on_move: 1,
 	check_win: function(){
@@ -33,9 +35,6 @@ var states = function (hint_id,done_id) {
 	    $(hint_id).text(desc);
 	},
 	check: function(to){
-	    if(to == 0){
-		this.check_win();
-	    }
 	    if ( to == 1 && this.state == 0 ) {
 		return true;
 	    };
@@ -64,39 +63,54 @@ var states = function (hint_id,done_id) {
 	    if ( to == 6 && this.state == 2 ){
 		return true;
 	    }
+	    if ( to == 4 && this.state == 2 ){
+		return true;
+	    }
+	    if ( to == 5 && this.state == 3 ){
+		return true;
+	    }
+	    if ( to == 0 && this.state == 5 ){
+		return true;
+	    }
+	    
 	    
 	    
 	    alert("Invalid new state : " +  to + " old state was " + this.state );
 	    return false;
 	},
 	change: function(to) {
-	    
 	    if ( this.check(to) == false ) {
 		alert("No change to " + to );
 		return;
 	    }
 	    if (this.state == 1 && to == 0 ) {
 		this.next_player();
-	    }
+	    } 
 	    if (this.state == 4 && to == 0) {
 		this.next_player();
 	    }
-	    if ( (this.state == 1 || this.state) == 5 && to == 0 ){
+	    if ( this.state == 5 && to == 0 ){
 		this.next_player();
 	    }
 	    if(this.state == 2 && to == 6){
 		alert("what I am doing here");
 	    }
 	    this.state = to;
-	    this.done(done_state[to]);
+	    this.buttons(to);
 	    this.hint();
 	},
-	done: function(show){
-	    if (show) {
+	buttons: function(to){
+	    if (done_state[to]) {
 		$(done_id).show("slow");
 	    } else {
 		$(done_id).hide("slow");
 	    }
+	    if (new_move[to]) {
+		$(new_move_id).show("slow");
+	    } else {
+		$(new_move_id).hide("slow");
+	    }
+	    
 	},
 
     };

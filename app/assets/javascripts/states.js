@@ -1,16 +1,18 @@
 /*global $, alert */
 var states = function (hint_id,done_id,new_move_id) {
-    var done_state = [false,true, true, false,true, true];
-    var new_move =   [false,false,false,false,false,true];
+    var done_state =        [false,false, true, false,false, true];
+    var done_state_active = [false,true, false, false,true, true];
+    var new_move =          [false,false,false,false,false,true];
     var states_desc = [ "Expect placing tile or rotate your tile",
-		    "You are in rotate after place do as long as you want but must",
-		    "You are in rotate of existing tile which was in active position and you are now in inactive postition",
-		    "You are to choose where to slide",
-		    "You finished slide... Rotate in active stance then press done",
-		    "You finished slide at inactive position .. You can make another move! or press done",
-		    "You are in rotate of existing tile which was in active position and you are now in inactive postition",
-		    "You lose..",
-		    "You win!",
+			"You are in rotate after place do as long as you want but must end in active",
+			"You are in rotate of existing tile which was in active position and you must end in inactive position",
+			"You are to choose where to slide",
+			"You finished slide... Rotate in active stance then press done",
+			"You finished slide at inactive position .. You can make another move! or press done",
+			"You are in rotate of existing tile which was in active position and you are now in inactive postition",
+			"You lose..",
+			"You win!",
+			
 		  ];
     
     var s = {
@@ -75,7 +77,7 @@ var states = function (hint_id,done_id,new_move_id) {
 	    alert("Invalid new state : " +  to + " old state was " + this.state );
 	    return false;
 	},
-	change: function(to) {
+	change: function(to,is_active) {
 	    if ( this.check(to) === false ) {
 		alert("No change to " + to );
 		return;
@@ -90,19 +92,27 @@ var states = function (hint_id,done_id,new_move_id) {
 		this.next_player();
 	    }
 	    this.state = to;
-	    this.buttons(to);
+	    this.buttons(to,is_active);
 	    this.hint();
 	},
-	buttons: function(to){
-	    if (done_state[to]) {
-		$(done_id).show("slow");
+	buttons: function(to,is_active){
+	    if (is_active === false ) {
+		if (done_state[to] ) {
+		    $(done_id).show();
+		} else {
+		    $(done_id).hide();
+		}
 	    } else {
-		$(done_id).hide("slow");
+		if (done_state_active[to] ) {
+		    $(done_id).show();
+		} else {
+		    $(done_id).hide();
+		}
 	    }
 	    if (new_move[to]) {
-		$(new_move_id).show("slow");
+		$(new_move_id).show();
 	    } else {
-		$(new_move_id).hide("slow");
+		$(new_move_id).hide();
 	    }
 	    
 	},

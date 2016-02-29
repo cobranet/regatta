@@ -94,6 +94,12 @@ var tile = function(n,size) {
 	    return pos;
 
 	},
+	key_down: function(e){
+	    var code = e.keyCode || e.which;
+	    if(code == 13) {
+		t.done_action();
+	    }
+	},
 	done_action: function() {
 	    var st = t.states.state;
 	    if (st == 1 || st == 5  ) {
@@ -136,6 +142,7 @@ var tile = function(n,size) {
 		    t1.place();
 		    t.table[pos.row][pos.col] = t1;
 		    t.states.change(1);
+		    t.states.buttons(1,t1.is_active());
 		    t.select(t1);
 		    return;
 		}
@@ -325,6 +332,7 @@ var tile = function(n,size) {
 		    return;
 		}
 	    tile.rotate(side);
+	    t.states.buttons(2,tile.is_active());
 	    return;
 	    
 	},
@@ -335,6 +343,7 @@ var tile = function(n,size) {
 		return;
 	    }
 	    tile.rotate(side);
+	    t.states.buttons(4,tile.is_active());
 	    return;
 	},
 	click_at_1: function(tile,side ){
@@ -350,6 +359,7 @@ var tile = function(n,size) {
 		} else  {
 		    for( s = 0; s < steps; s++) {
 			tile.rotate(side);
+			t.states.buttons(1,tile.is_active());
 		    }
 		    return;
 		}
@@ -361,16 +371,17 @@ var tile = function(n,size) {
 	    if ( st === 1 && tile_at_click.id === t.selected.id  ) {
 		t.click_at_1(tile_at_click,st,side);
 		}
-		if ( st == 0 && tile_at_click.color == t.states.on_move ) {
-		    t.states.change(2);
-		    t.select(tile_at_click);
-		    new_angle = tile_at_click.rotate_pos(tile.angle,side);
-		    if (t.check_placement(tile_at_click.row,tile_at_click.col,new_angle) == false ) {
-			return;
-		    }
-		    tile_at_click.rotate(side);
+	    if ( st == 0 && tile_at_click.color == t.states.on_move && tile_at_click.is_active() === true ) {
+		alert("tu sam");
+		t.states.change(2);
+		t.select(tile_at_click);
+		new_angle = tile_at_click.rotate_pos(tile.angle,side);
+		if (t.check_placement(tile_at_click.row,tile_at_click.col,new_angle) == false ) {
 		    return;
 		}
+		tile_at_click.rotate(side);
+		return;
+	    }
 	    if ( (st == 2 || st == 6) && tile_at_click.id  == t.selected.id ) {
 		    t.click_at_2(tile_at_click,side);
 		}
@@ -417,6 +428,9 @@ $( function(){
     tile = tile(8,30);
     tile.table.draw_grid();
     $('#tiles').mousedown(tile.mouse_down);
+    $('body').keydown(function(e){
+	tile.key_down(e);
+    });
     tile.bind_buttons();
     tile.states.hint();
     tile.states.buttons(false);

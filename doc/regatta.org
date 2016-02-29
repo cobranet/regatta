@@ -22,7 +22,7 @@
 *** TODO Save to database
 *** DONE Fix right edge .. Make svg bigger ( + 3 is good but why ??)
 *** DONE Block placement if invalid
-*** TODO Make ENTER to do DONE
+*** DONE Make ENTER to do DONE
 *** DONE Can't slide if is in active position
 *** DONE Trace selected item ... in ? Tile of ? Game 
 *** DONE Make active function from position

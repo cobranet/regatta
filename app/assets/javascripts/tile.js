@@ -10,7 +10,6 @@ var tiles = function(parent_id,size,all_colors){
 	place: new Audio('place.wav')
     },
     tt = {
-	myclass: "tiles",
 	parent_id: parent_id,
 	create: function(row,col,angle,color){
 	    ids ++;

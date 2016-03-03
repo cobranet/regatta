@@ -1,3 +1,4 @@
+/*global d3 */
 function create_table(n,size){
     var g = [];
     var k,i;
@@ -6,7 +7,7 @@ function create_table(n,size){
 	for (k = 0; k < n; k++){
 	    g[i][k] = null;
 	}
-    }    
+    }
     g.count_active = function(who){
 	var count = 0;
 	var at;
@@ -49,7 +50,7 @@ function create_table(n,size){
 		}
 		if (south != null){
 		    if (south.angle != 2 ) {
-			if ( north.position_penetrating()[0] == 1) {
+			if ( south.position_penetrating()[0] == 1) {
 			    arr[1] = 2;
 			} else {
 			    arr[1] = 1;
@@ -116,6 +117,8 @@ function create_table(n,size){
 		       [1,0,1,1, 1,0,1,0],
 		       [1,0,1,0, 1,1,1,0]];
 	var touch = g.touch_by(row,col);
+	console.log("touch");
+	console.log(touch);
 	var posible = [1,1,1,1,1,1,1,1];
 	
 	for (i = 0; i < 4; i++){

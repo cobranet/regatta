@@ -1,14 +1,5 @@
 /*global $,create_table,tiles,states,alert */
 var tile = function(n,size) {
-    var arr =
-	[[], 
-	 [1,0,1,1],
-	 [],
-	 [1,1,0,1],
-	 [],
-	 [1,1,1,0],
-	 [],
-	 [0,1,1,1]];
     var t = {
 	n: n,
 	size: size,
@@ -16,6 +7,9 @@ var tile = function(n,size) {
 	select: function(which_tile){
 	    this.selected = which_tile;
 	    which_tile.activate();
+	},
+	set_score: function(){
+	    $("#score").text("White " + t.table.count_active(0) + " " + "Black " + t.table.count_active(1));
 	},
 	debug: function(obj,string){
 	    var s = "<h3>debuger</h3>";
@@ -36,7 +30,7 @@ var tile = function(n,size) {
 	    which_tile.deactivate();
 	},
 	table: create_table(8,size),
-	tiles: tiles("#tiles",30,["white","black"]),
+	tiles: tiles("#tiles",size,["white","black"]),
  	states: states('#hint','#done','#new_move'),
 	rotate_pos: function(pos,smer){
 		    var p = pos + smer;
@@ -49,6 +43,7 @@ var tile = function(n,size) {
 		    return p;
 	},
 	can_be_activate: function(row,col,angle){
+	    
 	    if (t.check_placement(row,col,t.rotate_pos(angle,1)) == true) {
 		return true;
 	    }
@@ -61,6 +56,8 @@ var tile = function(n,size) {
 	
 	kick: function(row,col,s,from_where){
 	    if (t.table[row][col] != null){
+		console.log(t.table);
+		console.log(row);
 		var a = t.table[row][col].position_penetrating();
 		t.debug("KICK : " + a + " From where ???" + from_where  );
 		if (a[from_where] == 1) {
@@ -70,6 +67,8 @@ var tile = function(n,size) {
 	},
 	// returning blocking tiles as array of 0,1 in following order (North, East, South , West ) or ( row -1 , col + 1, row + 1, col -1 )
 	check_placement: function(row,col,pos){
+	    console.log(pos);
+	    console.log(t.table.posible_placements(row,col)); 
 	    if (t.table.posible_placements(row,col)[pos] == 1){
 		return true;
 	    }
@@ -106,15 +105,18 @@ var tile = function(n,size) {
 		st = 0;
 		t.selected.deactivate();
 		t.states.change(0);
+		t.set_score();
 		return;
 	    }
 	    if (st == 2 ) {
 		t.states.change(3);
+		t.set_score();
 		return;
 	    }
 	    if (st == 4 ) {
 		t.selected.deactivate();
 		t.states.change(0);
+		t.set_score();
 		return;
 	    }
 	},
@@ -137,7 +139,7 @@ var tile = function(n,size) {
 	    var t1;
 	    var pos = t.xy_colrow(e);
 	    for ( angle = 0; angle <= 7; angle++){
-		if(t.check_placement(pos.row,pos.col,angle)){
+		if(t.check_placement(pos.row,pos.col,angle) && t.can_be_activate(pos.row,pos.col,angle)){
 		    t1 = t.tiles.create(pos.row,pos.col,angle,what);
 		    t1.place();
 		    t.table[pos.row][pos.col] = t1;
@@ -151,53 +153,44 @@ var tile = function(n,size) {
 	},
 	can_slide: function(where,pos,s){
 	    var tt = t.table[where.row][where.col];
-	    var tt1;
+	    var touch;
 	    if ( tt != null ){
 		return false;
 	    }
-	    if ( s == 'E' && where.col  == 7 ) {
-		return true; // this is ok .. 
-	    }
-
-	    if ( s == 'S' && where.row  == 7 ) {
-		return true; // this is ok .. 
-	    }
-
-	    if ( s == 'W' && where.col  == 0 ) {
-		return true; // this is ok .. 
-	    }
-
-	    if ( s == 'N' && where.row  == 0 ) {
-		return true; // this is ok .. 
-	    }
+	    touch = t.table.touch_by(where.row,where.col); 
 	    
-	    // col or row is not 7 and not 0  
-	    if (s == 'E' ) {
-		tt1 = t.table[where.row][where.col + 1];
-	    } else if ( s == 'W') {
-		tt1 = t.table[where.row][where.col - 1];
-	    } else if ( s == 'S' ) {
-		tt1 = t.table[where.row+1][where.col];
-	    } else if ( s == 'N' ) {
-		tt1 = t.table[where.row-1][where.col];
+	    if ( (s == 'E' && touch[1] != 2) ) {
+		return true;
 	    }
+
+	    if ( s == 'E' && pos == 4 ) {
+		return true;
+	    }
+
+	    if ( (s == 'N' && touch[0] != 2) ) {
+		return true;
+	    }
+
+	    if ( s == 'N' && pos == 2 ) {
+		return true;
+	    }
+
+	    if ( (s == 'S' && touch[2] != 2) ) {
+		return true;
+	    }
+
+	    if ( s == 'S' && pos == 6 ) {
+		return true;
+	    }
+	    if ( (s == 'W' && touch[3] != 2) ) {
+		return true;
+	    }
+
+	    if ( s == 'W' && pos == 0 ) {
+		return true;
+	    }
+
 	    
-	    if (tt1 ==  null ){
-		return true; /// ok 
-	    }
-	    arr = tt1.position_penetrating();
-	    if ((s == 'E' && arr[3] != 1) || pos == 4   ){
-		return true; 
-	    }
-	    if ((s == 'W' && arr[1] != 1) || pos == 0 ){
-		return true; 
-	    }
-	    if ((s == 'N' && arr[2] != 1) ||  pos == 2 ){
-		return true; 
-	    }
-	    if ( (s == 'S' && arr[0] != 1) ||  pos == 6 ){
-		return true; 
-	    }
 	    return false; /// if not true .. then is false
 	},
 	slide_east: function (from,to){
@@ -249,7 +242,6 @@ var tile = function(n,size) {
 	slide_south: function (from,to){
 	    var k = 1;
 	    while(from.row + k <= to.row){
-
 		if (!t.can_slide({row: from.row + k ,col: from.col} ,from.angle,'S')){
 		    alert("can't slide");
 		    return;
@@ -372,7 +364,6 @@ var tile = function(n,size) {
 		t.click_at_1(tile_at_click,st,side);
 		}
 	    if ( st == 0 && tile_at_click.color == t.states.on_move && tile_at_click.is_active() === true ) {
-		alert("tu sam");
 		t.states.change(2);
 		t.select(tile_at_click);
 		new_angle = tile_at_click.rotate_pos(tile.angle,side);
@@ -412,9 +403,12 @@ var tile = function(n,size) {
 		    t.slide(mouse);
 		}
 		if (st == 2) {
+		    alert("slide from 2");
 		    t.slide_to(t.selected,mouse);
+		    
 		}
 		if (st == 3 && tile_at_click == null ){
+		    alert("slide from 3");
 		    t.slide_to(t.selected,mouse);
 		}
 	    }
@@ -425,7 +419,7 @@ var tile = function(n,size) {
 
 
 $( function(){
-    tile = tile(8,30);
+    tile = tile(8,40);
     tile.table.draw_grid();
     $('#tiles').mousedown(tile.mouse_down);
     $('body').keydown(function(e){
@@ -433,7 +427,8 @@ $( function(){
     });
     tile.bind_buttons();
     tile.states.hint();
-    tile.states.buttons(false);
+    tile.states.buttons(0,false);
     $("#tiles").attr("width",tile.size * tile.n + 3);
     $("#tiles").attr("height",tile.size * tile.n + 3);
+
 } );

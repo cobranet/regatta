@@ -56,8 +56,6 @@ var tile = function(n,size) {
 	
 	kick: function(row,col,s,from_where){
 	    if (t.table[row][col] != null){
-		console.log(t.table);
-		console.log(row);
 		var a = t.table[row][col].position_penetrating();
 		t.debug("KICK : " + a + " From where ???" + from_where  );
 		if (a[from_where] == 1) {
@@ -67,8 +65,6 @@ var tile = function(n,size) {
 	},
 	// returning blocking tiles as array of 0,1 in following order (North, East, South , West ) or ( row -1 , col + 1, row + 1, col -1 )
 	check_placement: function(row,col,pos){
-	    console.log(pos);
-	    console.log(t.table.posible_placements(row,col)); 
 	    if (t.table.posible_placements(row,col)[pos] == 1){
 		return true;
 	    }

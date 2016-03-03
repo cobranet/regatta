@@ -31,33 +31,30 @@ function create_table(n,size){
 	var north,south;
 	if ( row == 0 ) {
 	    arr[0] = 1;
-	} else {
-	    if (row == n-1){
+	}
+	if (row == n-1){
 		arr[1] = 1;
-	    } else {
-		north = g[row-1][col];
-		south = g[row+1][col];
+	}
+	north = g[row-1][col];
+	south = g[row+1][col];
+	if (north != null){
+	    if (north.angle != 6 ) {
+		if ( north.position_penetrating()[2] == 1) {
+		    arr[0] = 2;
+		} else {
+		    arr[0] = 1;
+		}
 		
-		if (north != null){
-		    if (north.angle != 6 ) {
-			if ( north.position_penetrating()[2] == 1) {
-			    arr[0] = 2;
-			} else {
-			    arr[0] = 1;
-			}
-			   
-		    }
+	    }
+	}
+	if (south != null){
+	    if (south.angle != 2 ) {
+		if ( south.position_penetrating()[0] == 1) {
+		    arr[1] = 2;
+		} else {
+		    arr[1] = 1;
 		}
-		if (south != null){
-		    if (south.angle != 2 ) {
-			if ( south.position_penetrating()[0] == 1) {
-			    arr[1] = 2;
-			} else {
-			    arr[1] = 1;
-			}
-		    }
-		}
-    }
+	    }
 	}
 	return arr;
     };
@@ -66,30 +63,28 @@ function create_table(n,size){
 	var east,west;
 	if ( col == 0 ) {
 	    arr[1] = 1;
-	} else {
-	    if (col == n-1){
+	}
+	if (col == n-1){
 		arr[0] = 1;
-	    } else {
-		east = g[row][col+1];
-		west = g[row][col-1];
-		if (east != null){
-		    if (east.angle != 0 ) {
-			if ( east.position_penetrating()[3] == 1) {
-			    arr[0] = 2;
-			} else {
-			    arr[0] = 1;
-			}
-			   
-		    }
+	}
+	east = g[row][col+1];
+	west = g[row][col-1];
+	if (east != null){
+	    if (east.angle != 0 ) {
+		if ( east.position_penetrating()[3] == 1) {
+		    arr[0] = 2;
+		} else {
+		    arr[0] = 1;
 		}
-		if (west != null){
-		    if (west.angle != 4 ) {
-			if ( west.position_penetrating()[1] == 1) {
-			    arr[1] = 2;
-			} else {
-			    arr[1] = 1;
-			}
-		    }
+		
+	    }
+	}
+	if (west != null){
+	    if (west.angle != 4 ) {
+		if ( west.position_penetrating()[1] == 1) {
+		    arr[1] = 2;
+		} else {
+		    arr[1] = 1;
 		}
 	    }
 	}
@@ -106,6 +101,7 @@ function create_table(n,size){
 	return arr;
     };
     g.posible_placements=function(row,col){
+	var ii,kk;
 	/* possible placement if there is 2 */
 	var on_two = [ [0,0,1,0, 0,0,0,0],
 		       [0,0,0,0, 1,0,0,0],
@@ -120,23 +116,24 @@ function create_table(n,size){
 	console.log("touch");
 	console.log(touch);
 	var posible = [1,1,1,1,1,1,1,1];
-	
-	for (i = 0; i < 4; i++){
-	    if (touch[i] == 2 ) {
-		for ( k = 0; k < 8; k++){
-		    if(on_two[i][k] == 0){
-			posible[k] = 0;
+	// ii is actualy N , E, S, W
+	for (ii = 0; ii < 4; ii++){
+	    if (touch[ii] == 2 ) {
+		for ( kk = 0; kk < 8; kk++){
+		    if(on_two[ii][kk] == 0){
+			posible[kk] = 0;
 		    }
 		}
 	    }
-	    if (touch[i] == 1 ) {
-		for ( k = 0; k < 8; k++){
-		    if(on_one[i][k] == 0){
-			posible[k] = 0;
+	    if (touch[ii] == 1 ) {
+		for ( kk = 0; kk < 8; kk++){
+		    if(on_one[ii][kk] == 0){
+			posible[kk] = 0;
 		    }
 		}
 	    }
 	}
+	console.log(posible);
 	return posible;
     };
 	    

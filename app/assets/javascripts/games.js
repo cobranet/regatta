@@ -4,6 +4,22 @@ var tile = function(n,size) {
 	n: n,
 	size: size,
 	selected: null,
+	to_string: function(){
+	    var i,k;
+	    var s = [];
+	    for( i=0 ; i<n; i++){
+		s[i] = [];
+		for ( k=0; k<n; k++){
+		    if t.table[i][k] === null) {
+		      s[i][k] = 0;
+		    else {
+			s[i][k] = { color: t.table[i][k].color,
+				    angle: t.table[i][k].angle};
+		    }
+		}
+	    }
+	    return JSON.stringify(s);
+	},
 	select: function(which_tile){
 	    this.selected = which_tile;
 	    which_tile.activate();

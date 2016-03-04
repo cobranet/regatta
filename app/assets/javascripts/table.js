@@ -31,12 +31,16 @@ function create_table(n,size){
 	var north,south;
 	if ( row == 0 ) {
 	    arr[0] = 1;
+	    north  = null;
+	} else {
+	    north = g[row-1][col];
 	}
 	if (row == n-1){
-		arr[1] = 1;
+	    arr[1] = 1;
+	    south = null;
+	} else {
+	    south = g[row+1][col];
 	}
-	north = g[row-1][col];
-	south = g[row+1][col];
 	if (north != null){
 	    if (north.angle != 6 ) {
 		if ( north.position_penetrating()[2] == 1) {

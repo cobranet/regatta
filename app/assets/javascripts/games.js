@@ -10,9 +10,9 @@ var tile = function(n,size) {
 	    for( i=0 ; i<n; i++){
 		s[i] = [];
 		for ( k=0; k<n; k++){
-		    if t.table[i][k] === null) {
-		      s[i][k] = 0;
-		    else {
+		    if (t.table[i][k] === null) {
+		      s[i][k] = 0; 
+		    } else {
 			s[i][k] = { color: t.table[i][k].color,
 				    angle: t.table[i][k].angle};
 		    }
@@ -232,7 +232,6 @@ var tile = function(n,size) {
 	    while(from.row - k >= to.row){
 
 		if ( !t.can_slide({row: from.row - k ,col: from.col} ,from.angle,'N')  ){
-		    alert("can't slide");
 		    return;
 		}
 		k++;
@@ -255,7 +254,6 @@ var tile = function(n,size) {
 	    var k = 1;
 	    while(from.row + k <= to.row){
 		if (!t.can_slide({row: from.row + k ,col: from.col} ,from.angle,'S')){
-		    alert("can't slide");
 		    return;
 
 		}
@@ -279,7 +277,6 @@ var tile = function(n,size) {
 	    var k = 1;
 	    while(from.col - k >= to.col){
 		if ( !t.can_slide({row: from.row,col: from.col - k} ,from.angle,'W')){
-		    alert("can't slide" + (from.col - k));
 		    return;
 		}
 		k++;
@@ -411,16 +408,13 @@ var tile = function(n,size) {
 		    return;
 		}
 		if (st == 0 && tile_at_click != null && tile_at_click == t.states.on_move && tile_at_click.is_active()  ){
-		    alert("slide");
 		    t.slide(mouse);
 		}
 		if (st == 2) {
-		    alert("slide from 2");
 		    t.slide_to(t.selected,mouse);
 		    
 		}
 		if (st == 3 && tile_at_click == null ){
-		    alert("slide from 3");
 		    t.slide_to(t.selected,mouse);
 		}
 	    }

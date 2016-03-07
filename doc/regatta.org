@@ -43,9 +43,11 @@
 *** TODO Can't slide in active position
 *** DONE Slide West can be finish if tile is 0 position even if there is penetrating tile on the end
 *** TODO Break mouse down by states
-*** TODO Login from facebook
+*** DONE Login from facebook
 *** TODO Make index .. to create game .. and show list of my games...
 *** TODO Make clear who is on move
+*** TODO Wierd bug in row 0 ... when want do slide 
+*** TODO Refactor again .. Make table central object .. All operations are on table
 * Insights
 ** There is 8 possible position inside cell.
 ** Active positions is odd .. inactive is even and when placing tile must be in active position unless there is no active position..

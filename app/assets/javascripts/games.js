@@ -72,7 +72,7 @@ var tile = function(n,size) {
 	
 	kick: function(row,col,s,from_where){
 	    if (t.table[row][col] != null){
-		var a = t.table[row][col].position_penetrating();
+		var a = t.table[row][col].position_penetrating(); /// there is bug here
 		t.debug("KICK : " + a + " From where ???" + from_where  );
 		if (a[from_where] == 1) {
 		    t.table[row][col].rotate(s);

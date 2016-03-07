@@ -1,4 +1,4 @@
-/*global d3 */
+/*global d3, $ */
 function create_table(n,size){
     var g = [];
     var k,i;
@@ -21,11 +21,102 @@ function create_table(n,size){
 	}
 	return count;
     };
-    
+    g.can_slide = function(row,col,pos,s){
+	    var tt = g[row][col];
+	    var touch;
+	    if ( tt != null ){
+		return false;
+	    }
+	    touch = g.touch_by(row,col); 
+	    
+	    if ( (s == 'E' && touch[1] != 2) ) {
+		return true;
+	    }
+
+	    if ( s == 'E' && pos == 4 ) {
+		return true;
+	    }
+
+	    if ( (s == 'N' && touch[0] != 2) ) {
+		return true;
+	    }
+
+	    if ( s == 'N' && pos == 2 ) {
+		return true;
+	    }
+
+	    if ( (s == 'S' && touch[2] != 2) ) {
+		return true;
+	    }
+
+	    if ( s == 'S' && pos == 6 ) {
+		return true;
+	    }
+	    if ( (s == 'W' && touch[3] != 2) ) {
+		return true;
+	    }
+
+	    if ( s == 'W' && pos == 0 ) {
+		return true;
+	    }
+
+	    
+	    return false; /// if not true .. then is false
+    };
+    g.is_slideable = function(row,col,pos){
+	var all = g.possible_rotations(row,col,pos);
+	all.forEach(function(ele){
+	    if (row != 0 ) {
+		if ( g.can_slide(row-1,col,ele,'N')){
+		    return true;
+		}
+	    }
+	    if (row != n-1){
+		if (g.can_slide(row+1,col,ele,'S')){
+		    return true;
+		}
+	    }
+	    if (col != 0 ) {
+		if (g.can_slide(row,col-1,ele,'W')){
+		    return true;
+		}
+	    }
+	    if (col != n-1) {
+		if (g.can_clide(row,col+1,ele,'E')){
+		    return true;
+		}
+	    }
+	});
+	return true;
+    };
+    g.possible_rotations = function(row,col,pos){
+	var  all = g.posible_placements(row,col);
+	var curpos = pos+1;
+	var possible = [0,0,0,0,0,0,0,0];
+	var stop = false;
+	while(stop === false &&  curpos != pos  ) {
+	    if (all[curpos] === 1){
+		possible[curpos] = 1;
+	    } else {
+		stop = true;
+	    }
+	    curpos++;
+	}
+	curpos = pos - 1;
+	while (stop == false && curpos != pos ){
+	    if (all[curpos] === 1 ) {
+		possible[curpos] = 1;
+	    } else {
+		stop = true;
+	    }
+	    curpos--;
+	}
+	return possible;
+    };
     /* Every tile have four sides.. side can be 0 - empty or have convex side , 1 - full but not pentrating, 2 penetrating inside tile
        we put them in array ( North, East, South, West )
        We split checking in two functions ... by row and by column .. and join result in third
-   */
+    */
     g.touch_by_row = function(row,col){
 	var arr = [0,0];   // we asume that north and south position is empty
 	var north,south;
@@ -37,7 +128,7 @@ function create_table(n,size){
 	}
 	if (row == n-1){
 	    arr[1] = 1;
-	    south = null;
+ 	    south = null;
 	} else {
 	    south = g[row+1][col];
 	}

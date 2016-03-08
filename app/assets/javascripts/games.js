@@ -116,18 +116,18 @@ var tile = function(n,size) {
 	    if (st == 1 || st == 5  ) {
 		st = 0;
 		t.selected.deactivate();
-		t.states.change(0);
+		t.states.change('PLACE_OR_ROTATE');
 		t.set_score();
 		return;
 	    }
 	    if (st == 2 ) {
-		t.states.change(3);
+		t.states.change('WHERE_TO_SLIDE');
 		t.set_score();
 		return;
 	    }
 	    if (st == 4 ) {
 		t.selected.deactivate();
-		t.states.change(0);
+		t.states.change('PLACE_OR_ROTATE');
 		t.set_score();
 		return;
 	    }
@@ -147,12 +147,6 @@ var tile = function(n,size) {
 	    $("#pick").click(t.pick_action);
 	    $("#activate").click(t.activate_action);
 	},
-	slide: function(pos){
-	    t.slide_from = pos;
-	    t.state = 2;
-	    t.states.hint();
-	    t.done(true);
-	},
 	mouse_place: function(e){
 	    var what = t.states.on_move;
 	    var angle;
@@ -163,7 +157,7 @@ var tile = function(n,size) {
 		    t1 = t.tiles.create(pos.row,pos.col,angle,what);
 		    t1.place();
 		    t.table[pos.row][pos.col] = t1;
-		    t.states.change(1);
+		    t.states.change("ROT_AFTER_PLACE");
 		    t.states.buttons(1,t1.is_active());
 		    t.select(t1);
 		    return;
@@ -330,9 +324,9 @@ var tile = function(n,size) {
 		t.slide_north(from,to);
 	    }
 	    if ( t.can_be_activate(from.row,from.col,angle)){
-		t.states.change(4);
+		t.states.change("AFTER_SLIDE_ACTIVE");
 	    } else {
-		t.states.change(5);
+		t.states.change("AFTER_SLIDE_INACTIVE");
 	    }
 	},
 	click_at_2: function(tile,side){
@@ -381,7 +375,7 @@ var tile = function(n,size) {
 		t.click_at_1(tile_at_click,st,side);
 		}
 	    if ( st == 0 && tile_at_click.color == t.states.on_move && tile_at_click.is_active() === true ) {
-		t.states.change(2);
+		t.states.change("ROT_ACTIVE");
 		t.select(tile_at_click);
 		new_angle = tile_at_click.rotate_pos(tile.angle,side);
 		if (t.check_placement(tile_at_click.row,tile_at_click.col,new_angle) == false ) {
@@ -407,7 +401,6 @@ var tile = function(n,size) {
 	    }
 	    var tile_at_click = t.table[mouse.row][mouse.col];
 	    var st = t.states.state;
-
 	    if (tile_at_click != null ) {
 		t.click_on_tile(tile_at_click,mouse.s);
 	    }  else {

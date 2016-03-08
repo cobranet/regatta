@@ -1,5 +1,13 @@
 /*global $, alert */
 var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothing_id) {
+    var state_ids = ["PLACE_OR_ROTATE",
+                     "ROT_AFTER_PLACE",
+                     "ROT_ACTIVE",
+                     "WHERE_TO_SLIDE",
+                     "AFTER_SLIDE_ACTIVE",
+                     "AFTER_SLIDE_INACTIVE",
+                     "AT_NEW_CHOOSE_TO_ACTIVATE"];
+                       
     var all = [ { id: "PLACE_OR_ROTATE",
 		  done_inactive: false,
 		  done_active: false,
@@ -62,29 +70,45 @@ var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothin
 	    desc = desc + " on move is " + this.on_move;
 	    $(hint_id).text(desc);
 	},
+	get_state: function(){
+	    return all[this.state];
+	},
 	change: function(to,is_active) {
-	    if (all[to].id === 'PLACE_OR_ROTATE' && all[this.state].new_move === false  ){
+	    var to_ind;
+	    if (typeof to === 'string' ) {
+		to_ind = state_ids.indexOf(to);
+	    } else {
+		to_ind = to;
+	    }
+
+	    if (all[to_ind].id === 'PLACE_OR_ROTATE' && all[this.state].new_move === false  ){
 		this.next_player();
 	    }
-	    this.state = to;
+	    this.state = to_ind;
 	    this.buttons(to,is_active);
 	    this.hint();
 	},
 	buttons: function(to,is_active){
+	    var to_ind;
+	    if (typeof to === 'string' ) {
+		to_ind = state_ids.indexOf(to);
+	    } else {
+		to_ind = to;
+	    }
 	    if (is_active === false ) {
-		if (all[to].done_inactive) {
+		if (all[to_ind].done_inactive) {
 		    $(done_id).show();
 		} else {
 		    $(done_id).hide();
 		}
 	    } else {
-		if (all[to].done_active ) {
+		if (all[to_ind].done_active ) {
 		    $(done_id).show();
 		} else {
 		    $(done_id).hide();
 		}
 	    }
-	    if (all[to].new_move) {
+	    if (all[to_ind].new_move) {
 		$(new_move_id).show();
 		$(pick_id).show();
 		$(activate_id).show();

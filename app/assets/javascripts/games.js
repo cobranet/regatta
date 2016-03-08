@@ -47,7 +47,7 @@ var tile = function(n,size) {
 	},
 	table: create_table(8,size),
 	tiles: tiles("#tiles",size,["white","black"]),
- 	states: states('#hint','#done','#new_move'),
+ 	states: states('#hint','#done','#new_move',"#activate","#pick","#do_nothing"),
 	rotate_pos: function(pos,smer){
 		    var p = pos + smer;
 		    if (p>7) {
@@ -68,12 +68,12 @@ var tile = function(n,size) {
 	    }
 	    return false;
 	},
-	// What the fuck is from where here ...
-	
 	kick: function(row,col,s,from_where){
+	    if (row < 0 || row > n - 1 || col < 0 || col > n - 1) {
+		return;
+	    }
 	    if (t.table[row][col] != null){
-		var a = t.table[row][col].position_penetrating(); /// there is bug here
-		t.debug("KICK : " + a + " From where ???" + from_where  );
+		var a = t.table[row][col].position_penetrating(); 
 		if (a[from_where] == 1) {
 		    t.table[row][col].rotate(s);
 		}
@@ -135,9 +135,17 @@ var tile = function(n,size) {
 	new_move_action: function(){
 	    t.done_action();
 	},
+	activate_action: function(){
+	    alert("chose piece to activate");
+	},
+	pick_action: function(){
+	    alert("chose piece to pick");
+	},
 	bind_buttons: function(){
 	    $("#done").click(t.done_action);
 	    $("#new_move").click(t.new_move_action);
+	    $("#pick").click(t.pick_action);
+	    $("#activate").click(t.activate_action);
 	},
 	slide: function(pos){
 	    t.slide_from = pos;

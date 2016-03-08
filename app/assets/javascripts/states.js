@@ -1,5 +1,5 @@
 /*global $, alert */
-var states = function (hint_id,done_id,new_move_id) {
+var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothing_id) {
     var all = [ { id: "PLACE_OR_ROTATE",
 		  done_inactive: false,
 		  done_active: false,
@@ -29,7 +29,12 @@ var states = function (hint_id,done_id,new_move_id) {
 		  done_inactive: false,
 		  done_active: false,
 		  new_move: true,
-		  desc: "You finished slide at inactive position .. You can make another move! or press done"}
+		  desc: "You finished slide at inactive position .. You can make another move! or press done"},
+		{ id: "AT_NEW_CHOOSE_TO_ACTIVATE",
+		  done_inactive: false,
+		  done_active: true,
+		  new_move: false,
+		  desc: "Choose piece to activate"}
 
 	      ];
                 
@@ -40,6 +45,9 @@ var states = function (hint_id,done_id,new_move_id) {
 	hint_id: hint_id,
 	done_id: done_id,
 	new_move_id: new_move_id,
+	pick_id: pick_id,
+	activate_id: activate_id,
+	do_nothing_id: do_nothing_id,
 	state: 0,
 	on_move: 1,
 	next_player: function(){
@@ -78,8 +86,14 @@ var states = function (hint_id,done_id,new_move_id) {
 	    }
 	    if (all[to].new_move) {
 		$(new_move_id).show();
+		$(pick_id).show();
+		$(activate_id).show();
+		$(do_nothing_id).show();
 	    } else {
 		$(new_move_id).hide();
+		$(pick_id).hide();
+		$(activate_id).hide();
+		$(do_nothing_id).hide();
 	    }
 	    
 	},

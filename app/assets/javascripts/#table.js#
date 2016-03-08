@@ -26,7 +26,6 @@ function create_table(n,size){
     possitions[7] = { penetrating: [1,2,2,2],
 		      active: true};
 		    
-    
     g.touch_by=function(row,col){
 	var touch = [0,0,0,0]; // N E S W
 	if (row === 0) {

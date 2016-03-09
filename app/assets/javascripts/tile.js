@@ -6,8 +6,8 @@ var tiles = function(parent_id,size,all_colors){
     var colors = all_colors;
     var ids = 0;
     var audios = {
-	rotate: new Audio('rotate.wav'),
-	place: new Audio('place.wav')
+	rotate: new Audio('/rotate.wav'),
+	place: new Audio('/place.wav')
     },
     tt = {
 	parent_id: parent_id,

@@ -14,7 +14,7 @@ var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothin
 		  done_inactive: false,
 		  done_active: false,
 		  new_move: false,
-		  desc: "Expect placing tile or rotate your tile" },
+		  desc: "Expect placing tile or slide" },
 		{ id: "ROT_AFTER_PLACE",
 		  done_inactive: false,
 		  done_active: true,
@@ -46,8 +46,8 @@ var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothin
 		  new_move: false,
 		  desc: "Choose piece to activate"},
 		{ id: "ROTATE_AFTER_ACTIVATE",
-		  done_inactive: true,
-		  done_active: false,
+		  done_inactive: false,
+		  done_active: true,
 		  new_move: false,
 		  desc: "Roatate and finish at active state."}
 
@@ -74,13 +74,13 @@ var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothin
 	},
 	hint: function(){
 	    var desc = all[this.state].desc;
-	    desc = desc + " on move is " + this.on_move;
 	    $(hint_id).text(desc);
+	    $(hint_id).attr("class","onmove"+this.on_move);
 	},
 	get_state: function(){
 	    return all[this.state].id;
 	},
-	change: function(to,is_active) {
+	change: function(to) {
 	    var to_ind;
 	    if (typeof to === 'string' ) {
 		to_ind = state_ids.indexOf(to);
@@ -92,10 +92,11 @@ var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothin
 		this.next_player();
 	    }
 	    this.state = to_ind;
-	    this.buttons(to,is_active);
 	    this.hint();
 	},
 	buttons: function(to,is_active){
+	    console.log("in buttons " + to );
+	    console.log("state "+ this.state);
 	    var to_ind;
 	    if (typeof to === 'string' ) {
 		to_ind = state_ids.indexOf(to);

@@ -113,7 +113,6 @@ var tile = function(n,size) {
 	},
 	done_action: function() {
 	    var st = t.states.get_state();
-	    console.log(st);
 	    if (st == "ROT_AFTER_PLACE" || st == "AFTER_SLIDE_INACTIVE"  ) {
 		t.selected.deactivate();
 		t.states.change('PLACE_OR_ROTATE');
@@ -371,6 +370,7 @@ var tile = function(n,size) {
 	click_on_tile: function(tile_at_click,side){
 	    var new_angle;
 	    var st = t.states.get_state();
+	    console.log(st);
 	    if ( st === "ROT_AFTER_PLACE" && tile_at_click.id === t.selected.id  ) {
 		t.click_at_1(tile_at_click,side); 
 	    } 

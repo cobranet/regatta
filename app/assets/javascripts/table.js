@@ -181,8 +181,6 @@ function create_table(n,size){
 		       [1,0,1,1, 1,0,1,0],
 		       [1,0,1,0, 1,1,1,0]];
 	var touch = g.touch_by(row,col);
-	console.log("touch");
-	console.log(touch);
 	var posible = [1,1,1,1,1,1,1,1];
 	// ii is actualy N , E, S, W
 	for (ii = 0; ii < 4; ii++){
@@ -201,7 +199,6 @@ function create_table(n,size){
 		}
 	    }
 	}
-	console.log(posible);
 	return posible;
     };
 	    

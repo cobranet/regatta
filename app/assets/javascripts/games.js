@@ -112,20 +112,20 @@ var tile = function(n,size) {
 	    }
 	},
 	done_action: function() {
-	    var st = t.states.state;
-	    if (st == 1 || st == 5  ) {
-		st = 0;
+	    var st = t.states.get_state();
+	    console.log(st);
+	    if (st == "ROT_AFTER_PLACE" || st == "AFTER_SLIDE_INACTIVE"  ) {
 		t.selected.deactivate();
 		t.states.change('PLACE_OR_ROTATE');
 		t.set_score();
 		return;
 	    }
-	    if (st == 2 ) {
+	    if (st == "ROT_ACTIVE" ) {
 		t.states.change('WHERE_TO_SLIDE');
 		t.set_score();
 		return;
 	    }
-	    if (st == 4 ) {
+	    if (st == "AFTER_SLIDE_ACTIVE" ) {
 		t.selected.deactivate();
 		t.states.change('PLACE_OR_ROTATE');
 		t.set_score();
@@ -136,7 +136,7 @@ var tile = function(n,size) {
 	    t.done_action();
 	},
 	activate_action: function(){
-	    alert("chose piece to activate");
+	    t.states.change('AT_NEW_CHOOSE_TO_ACTIVATE');
 	},
 	pick_action: function(){
 	    alert("chose piece to pick");
@@ -370,11 +370,16 @@ var tile = function(n,size) {
 	},
 	click_on_tile: function(tile_at_click,side){
 	    var new_angle;
-	    var st = t.states.state;
-	    if ( st === 1 && tile_at_click.id === t.selected.id  ) {
-		t.click_at_1(tile_at_click,st,side);
-		}
-	    if ( st == 0 && tile_at_click.color == t.states.on_move && tile_at_click.is_active() === true ) {
+	    var st = t.states.get_state();
+	    if ( st === "ROT_AFTER_PLACE" && tile_at_click.id === t.selected.id  ) {
+		t.click_at_1(tile_at_click,side); 
+	    } 
+	    if (st === "AT_NEW_CHOOSE_TO_ACTIVATE" && tile_at_click.color == t.states.on_move && tile_at_click.is_active() === false ) {
+		t.states.change("ROTATE_AFTER_ACTIVATE");
+		t.select(tile_at_click);
+	    }
+		
+	    if ( st == "PLACE_OR_ROTATE" && tile_at_click.color == t.states.on_move && tile_at_click.is_active() === true ) {
 		t.states.change("ROT_ACTIVE");
 		t.select(tile_at_click);
 		new_angle = tile_at_click.rotate_pos(tile.angle,side);
@@ -384,12 +389,12 @@ var tile = function(n,size) {
 		tile_at_click.rotate(side);
 		return;
 	    }
-	    if ( (st == 2 || st == 6) && tile_at_click.id  == t.selected.id ) {
+	    if ( (st == "ROT_ACTIVE" || st == 'ROTATE_AFTER_ACTIVATE'  ) && tile_at_click.id  == t.selected.id ) {
 		    t.click_at_2(tile_at_click,side);
 		}
-		if ( st == 4 && tile_at_click.id  == t.selected.id ) {
-		    t.click_at_4(tile_at_click,side);
-	    	}
+	    if ( st == "AFTER_SLIDE_ACTIVE" && tile_at_click.id  == t.selected.id ) {
+		t.click_at_4(tile_at_click,side);
+	    }
 	    
 	},
 	mouse_down: function(e){
@@ -400,24 +405,25 @@ var tile = function(n,size) {
 		return;
 	    }
 	    var tile_at_click = t.table[mouse.row][mouse.col];
-	    var st = t.states.state;
+	    var st = t.states.get_state();
 	    if (tile_at_click != null ) {
 		t.click_on_tile(tile_at_click,mouse.s);
 	    }  else {
-		if ( st == 0  ) {
+		if ( st == 'PLACE_OR_ROTATE') {
 		    t.mouse_place(e);
 		    return;
 		}
 		if (st == 0 && tile_at_click != null && tile_at_click == t.states.on_move && tile_at_click.is_active()  ){
 		    t.slide(mouse);
 		}
-		if (st == 2) {
+		if (st == 'ROT_ACTIVE') {
 		    t.slide_to(t.selected,mouse);
 		    
 		}
-		if (st == 3 && tile_at_click == null ){
+		if (st == 'WHERE_TO_SLIDE' && tile_at_click == null ){
 		    t.slide_to(t.selected,mouse);
 		}
+
 	    }
 	}
     };
@@ -434,7 +440,7 @@ $( function(){
     });
     tile.bind_buttons();
     tile.states.hint();
-    tile.states.buttons(0,false);
+    tile.states.buttons("PLACE_OR_ROTATE",false);
     $("#tiles").attr("width",tile.size * tile.n + 3);
     $("#tiles").attr("height",tile.size * tile.n + 3);
 

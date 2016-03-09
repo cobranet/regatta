@@ -48,6 +48,13 @@
 *** TODO Make clear who is on move
 *** TODO Wierd bug in row 0 ... when want do slide 
 *** TODO Refactor again .. Make table central object .. All operations are on table
+*** TODO make move object...
+   Move is .. place new at X,Y
+           .. slide from x,y to x1,y1,pos1
+	   .. pick x,y
+           .. activate x,y,pos_new
+*** TODO If finish slide and there is only one active stand go to that angle automaticly
+*** TODO Hint all placable places where you finish in active and slideable
 * Insights
 ** There is 8 possible position inside cell.
 ** Active positions is odd .. inactive is even and when placing tile must be in active position unless there is no active position..

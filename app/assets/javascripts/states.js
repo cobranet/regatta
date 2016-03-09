@@ -1,12 +1,14 @@
 /*global $, alert */
 var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothing_id) {
-    var state_ids = ["PLACE_OR_ROTATE",
-                     "ROT_AFTER_PLACE",
-                     "ROT_ACTIVE",
-                     "WHERE_TO_SLIDE",
-                     "AFTER_SLIDE_ACTIVE",
-                     "AFTER_SLIDE_INACTIVE",
-                     "AT_NEW_CHOOSE_TO_ACTIVATE"];
+    var state_ids = ["PLACE_OR_ROTATE", // 0
+                     "ROT_AFTER_PLACE",  // 1
+                     "ROT_ACTIVE",  // 2
+                     "WHERE_TO_SLIDE", // 3
+                     "AFTER_SLIDE_ACTIVE", // 4
+                     "AFTER_SLIDE_INACTIVE", // 5
+                     "AT_NEW_CHOOSE_TO_ACTIVATE", // 6
+		     "ROTATE_AFTER_ACTIVATE", // 7 
+		    ];
                        
     var all = [ { id: "PLACE_OR_ROTATE",
 		  done_inactive: false,
@@ -42,7 +44,12 @@ var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothin
 		  done_inactive: false,
 		  done_active: true,
 		  new_move: false,
-		  desc: "Choose piece to activate"}
+		  desc: "Choose piece to activate"},
+		{ id: "ROTATE_AFTER_ACTIVATE",
+		  done_inactive: true,
+		  done_active: false,
+		  new_move: false,
+		  desc: "Roatate and finish at active state."}
 
 	      ];
                 
@@ -71,7 +78,7 @@ var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothin
 	    $(hint_id).text(desc);
 	},
 	get_state: function(){
-	    return all[this.state];
+	    return all[this.state].id;
 	},
 	change: function(to,is_active) {
 	    var to_ind;

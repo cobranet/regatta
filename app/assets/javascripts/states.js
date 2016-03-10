@@ -7,7 +7,8 @@ var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothin
                      "AFTER_SLIDE_ACTIVE", // 4
                      "AFTER_SLIDE_INACTIVE", // 5
                      "AT_NEW_CHOOSE_TO_ACTIVATE", // 6
-		     "ROTATE_AFTER_ACTIVATE", // 7 
+		     "ROTATE_AFTER_ACTIVATE", // 7
+		     "CHOSE_PIECE_TO_REMOVE"
 		    ];
                        
     var all = [ { id: "PLACE_OR_ROTATE",
@@ -49,7 +50,12 @@ var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothin
 		  done_inactive: false,
 		  done_active: true,
 		  new_move: false,
-		  desc: "Roatate and finish at active state."}
+		  desc: "Roatate and finish at active state."},
+		{ id: "CHOSE_PIECE_TO_REMOVE",
+		  done_inactive: false,
+		  done_active: false,
+		  new_move: false,
+		  desc: "Chose piece to remove!"}
 
 	      ];
                 
@@ -94,15 +100,8 @@ var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothin
 	    this.state = to_ind;
 	    this.hint();
 	},
-	buttons: function(to,is_active){
-	    console.log("in buttons " + to );
-	    console.log("state "+ this.state);
-	    var to_ind;
-	    if (typeof to === 'string' ) {
-		to_ind = state_ids.indexOf(to);
-	    } else {
-		to_ind = to;
-	    }
+	buttons: function(is_active){
+	    var to_ind = this.state;
 	    if (is_active === false ) {
 		if (all[to_ind].done_inactive) {
 		    $(done_id).show();

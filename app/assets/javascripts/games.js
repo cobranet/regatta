@@ -113,21 +113,24 @@ var tile = function(n,size) {
 	},
 	done_action: function() {
 	    var st = t.states.get_state();
-	    if (st == "ROT_AFTER_PLACE" || st == "AFTER_SLIDE_INACTIVE"  ) {
+	    if (st == "ROT_AFTER_PLACE" || st == "AFTER_SLIDE_INACTIVE" || st == "ROTATE_AFTER_ACTIVATE"  ) {
 		t.selected.deactivate();
 		t.states.change('PLACE_OR_ROTATE');
+		t.states.buttons(false);
 		t.set_score();
 		return;
 	    }
 	    if (st == "ROT_ACTIVE" ) {
 		t.states.change('WHERE_TO_SLIDE');
 		t.set_score();
+		t.states.buttons(false);
 		return;
 	    }
 	    if (st == "AFTER_SLIDE_ACTIVE" ) {
 		t.selected.deactivate();
 		t.states.change('PLACE_OR_ROTATE');
 		t.set_score();
+		t.states.buttons(false);
 		return;
 	    }
 	},
@@ -136,9 +139,11 @@ var tile = function(n,size) {
 	},
 	activate_action: function(){
 	    t.states.change('AT_NEW_CHOOSE_TO_ACTIVATE');
+	    t.states.buttons();
 	},
 	pick_action: function(){
-	    alert("chose piece to pick");
+	    t.states.change('CHOSE_PIECE_TO_REMOVE');
+	    t.states.buttons();
 	},
 	bind_buttons: function(){
 	    $("#done").click(t.done_action);
@@ -324,8 +329,10 @@ var tile = function(n,size) {
 	    }
 	    if ( t.can_be_activate(from.row,from.col,angle)){
 		t.states.change("AFTER_SLIDE_ACTIVE");
+		t.states.buttons(false);
 	    } else {
 		t.states.change("AFTER_SLIDE_INACTIVE");
+		t.states.buttons(false);
 	    }
 	},
 	click_at_2: function(tile,side){
@@ -334,7 +341,7 @@ var tile = function(n,size) {
 		    return;
 		}
 	    tile.rotate(side);
-	    t.states.buttons(2,tile.is_active());
+	    t.states.buttons(tile.is_active());
 	    return;
 	    
 	},
@@ -345,7 +352,7 @@ var tile = function(n,size) {
 		return;
 	    }
 	    tile.rotate(side);
-	    t.states.buttons(4,tile.is_active());
+	    t.states.buttons(tile.is_active());
 	    return;
 	},
 	click_at_1: function(tile,side ){
@@ -361,7 +368,7 @@ var tile = function(n,size) {
 		} else  {
 		    for( s = 0; s < steps; s++) {
 			tile.rotate(side);
-			t.states.buttons(1,tile.is_active());
+			t.states.buttons(tile.is_active());
 		    }
 		    return;
 		}
@@ -371,6 +378,12 @@ var tile = function(n,size) {
 	    var new_angle;
 	    var st = t.states.get_state();
 	    console.log(st);
+	    if (st === "CHOSE_PIECE_TO_REMOVE" && tile_at_click.color == t.states.on_move ){
+		tile_at_click.remove();
+		t.table[tile_at_click.row][tile_at_click.col] = null;
+		t.states.change("PLACE_OR_ROTATE");
+		t.states.buttons();
+	    }
 	    if ( st === "ROT_AFTER_PLACE" && tile_at_click.id === t.selected.id  ) {
 		t.click_at_1(tile_at_click,side); 
 	    } 
@@ -440,7 +453,7 @@ $( function(){
     });
     tile.bind_buttons();
     tile.states.hint();
-    tile.states.buttons("PLACE_OR_ROTATE",false);
+    tile.states.buttons(false);
     $("#tiles").attr("width",tile.size * tile.n + 3);
     $("#tiles").attr("height",tile.size * tile.n + 3);
 

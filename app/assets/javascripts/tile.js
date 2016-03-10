@@ -85,7 +85,7 @@ var tiles = function(parent_id,size,all_colors){
 		    
 		},
 		redraw: function(){
-		    d3.select('#t' + this.id).remove();
+		    this.remove();
 		    this.draw();
 		},
 		rotate:function(s){
@@ -105,6 +105,9 @@ var tiles = function(parent_id,size,all_colors){
 		place: function(){
 		    audios.place.play();
 		    this.draw();
+		},
+		remove: function(){
+		    d3.select('#t' + this.id).remove();
 		},
 		draw: function(){
 		    d3.select(parent_id).append("path")

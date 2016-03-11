@@ -25,21 +25,8 @@ var tile = function(n,size) {
 	    which_tile.activate();
 	},
 	set_score: function(){
-	    $("#score").text("White " + t.table.count_active(0) + " " + "Black " + t.table.count_active(1));
-	},
-	debug: function(obj,string){
-	    var s = "<h3>debuger</h3>";
-	    s = s + "<p>" + JSON.stringify(t.states) + "</p>";
-	    if ( t.selected ) {
-		s = s + "<p>" + JSON.stringify(t.selected) + "</p>";
-	    }
-	    if (obj) {
-		s = s + "<p>" + JSON.stringify(obj) + "</p";
-	    }
-	    if (string) {
-		s = s + "<p>" + string + "</p";
-	    }
-	    $("#debuger").html(s); 
+	    $("#score").text("White " + t.table.count_active(0) + "/" + t.table.count_all(0)  + " Black " + t.table.count_active(1) + "/" + t.table.count_all(1));
+	   
 	},
 	deselect: function(which_tile){
 	    this.selected = null;
@@ -116,6 +103,7 @@ var tile = function(n,size) {
 	    if (st == "ROT_AFTER_PLACE" || st == "AFTER_SLIDE_INACTIVE" || st == "ROTATE_AFTER_ACTIVATE"  ) {
 		t.selected.deactivate();
 		t.states.change('PLACE_OR_ROTATE');
+		t.states.check_win(t.table);
 		t.states.buttons(false);
 		t.set_score();
 		return;
@@ -129,20 +117,25 @@ var tile = function(n,size) {
 	    if (st == "AFTER_SLIDE_ACTIVE" ) {
 		t.selected.deactivate();
 		t.states.change('PLACE_OR_ROTATE');
+		t.states.check_win(t.table);
 		t.set_score();
 		t.states.buttons(false);
 		return;
 	    }
 	},
 	new_move_action: function(){
-	    t.done_action();
+	    t.selected.deactivate();
+	    t.states.change("CHOSE_NEW_MOVE");
+	    t.states.buttons();
 	},
 	activate_action: function(){
+	    t.selected.deactivate();
 	    t.states.change('AT_NEW_CHOOSE_TO_ACTIVATE');
 	    t.states.buttons();
 	},
 	pick_action: function(){
 	    t.states.change('CHOSE_PIECE_TO_REMOVE');
+	    t.selected.deactivate();
 	    t.states.buttons();
 	},
 	bind_buttons: function(){
@@ -306,7 +299,6 @@ var tile = function(n,size) {
  	    var tt = t.table[from.row][from.col];
 	    var angle = tt.angle;
 	    if(tt.is_active() == true ){
-		t.debug("Cant slide if active");
 		return; 
             }
 	    if ( from.row != to.row && from.col != to.col) {
@@ -359,7 +351,6 @@ var tile = function(n,size) {
 	    var old_angle,new_angle,s;
 	    old_angle = tile.angle;
 	    new_angle = tile.rotate_pos(tile.angle,side);
-	    t.debug("Old angle" + old_angle +  "New Angle" + new_angle);
 	    var steps = 1;
 	    while(old_angle != new_angle && steps < 9 ) {
 		if (t.check_placement(tile.row,tile.col,new_angle) == false ) {
@@ -411,8 +402,6 @@ var tile = function(n,size) {
 	    
 	},
 	mouse_down: function(e){
-	    t.debug("White " + t.table.count_active(0) + " Black " + t.table.count_active(1) );
-	    
 	    var mouse = t.xy_colrow(e);
 	    if (mouse == null){
 		return;
@@ -422,7 +411,7 @@ var tile = function(n,size) {
 	    if (tile_at_click != null ) {
 		t.click_on_tile(tile_at_click,mouse.s);
 	    }  else {
-		if ( st == 'PLACE_OR_ROTATE') {
+		if ( st == 'PLACE_OR_ROTATE' || st == 'CHOSE_NEW_MOVE'  ) {
 		    t.mouse_place(e);
 		    return;
 		}

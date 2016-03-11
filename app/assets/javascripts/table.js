@@ -63,6 +63,19 @@ function create_table(n,size){
 	}
 	return touch;
     };
+    g.count_all = function(who){
+	var count = 0;
+	var at;
+	for (i=0;i<n;i++){
+	    for (k=0;k<n;k++){
+		at = g[i][k];
+		if (at != null &&  at.color == who) {
+		    count++;
+		}
+	    }
+	}
+	return count;
+    };
     g.count_active = function(who){
 	var count = 0;
 	var at;

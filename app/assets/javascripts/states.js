@@ -8,7 +8,9 @@ var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothin
                      "AFTER_SLIDE_INACTIVE", // 5
                      "AT_NEW_CHOOSE_TO_ACTIVATE", // 6
 		     "ROTATE_AFTER_ACTIVATE", // 7
-		     "CHOSE_PIECE_TO_REMOVE"
+		     "CHOSE_PIECE_TO_REMOVE", // 8
+		     "YOU_LOSE",// 9,
+		     "CHOSE_NEW_MOVE" // 10
 		    ];
                        
     var all = [ { id: "PLACE_OR_ROTATE",
@@ -55,8 +57,17 @@ var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothin
 		  done_inactive: false,
 		  done_active: false,
 		  new_move: false,
-		  desc: "Chose piece to remove!"}
-
+		  desc: "Chose piece to remove!"},
+		{ id: "YOU_LOSE",
+		  done_inactive: false,
+		  done_active: false,
+		  new_move: false,
+		  desc: "You lose the game ... Better luck next time"},
+		{ id: "CHOSE_NEW_MOVE",
+		  done_inactive: false,
+		  done_active: false,
+		  new_move: false,
+		  desc: "You chose to make another move"}
 	      ];
                 
     
@@ -71,20 +82,20 @@ var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothin
 	do_nothing_id: do_nothing_id,
 	state: 0,
 	on_move: 1,
+	move: 1,
 	next_player: function(){
+	    this.move++;
 	    if (this.on_move === 1 ) {
 		this.on_move = 0;
 		return;
 	    }
+
 	    this.on_move = 1;
 	},
 	hint: function(){
 	    var desc = all[this.state].desc;
 	    $(hint_id).text(desc);
 	    $(hint_id).attr("class","onmove"+this.on_move);
-	},
-	get_state: function(){
-	    return all[this.state].id;
 	},
 	change: function(to) {
 	    var to_ind;
@@ -93,12 +104,22 @@ var states = function (hint_id,done_id,new_move_id,activate_id,pick_id,do_nothin
 	    } else {
 		to_ind = to;
 	    }
-
 	    if (all[to_ind].id === 'PLACE_OR_ROTATE' && all[this.state].new_move === false  ){
 		this.next_player();
 	    }
 	    this.state = to_ind;
 	    this.hint();
+	},
+
+	check_win: function(table){
+	    if (this.move > 3 ) {
+		if (table.count_all(this.on_move) == 21 || table.count_active(this.on_move) == 0 ) {
+		    this.change("YOU_LOSE");
+		}
+	    }
+	},
+	get_state: function(){
+	    return all[this.state].id;
 	},
 	buttons: function(is_active){
 	    var to_ind = this.state;

@@ -1,0 +1,40 @@
+var vplayer = (function(){
+    var moves = [];
+    var from_where = function(where) {
+	    var col = where.charCodeAt(0) - 65;
+	    var row = where.substring(1,200);
+	    return { col: col, row: row};
+    };
+    var commands = {
+	
+	place: function(who,where,pos){
+	    var w = from_where(where); 
+	    this.place(w.row,w.col,pos,who);
+	},
+	unplace: function(who,where,pos){
+	    var w = from_where(where);
+	    this.remove(w.row,w.col,who,pos);
+	    
+	},
+	rotate: function(where,angle){
+	    var w = from_where(where);
+	    piece = this.table[w.row,w.col]
+	}
+    };
+    var that = {};
+    that.undo = function(games,what){
+	var arr = what.split(" ");
+	var command = arr[0];
+	arr.shift();
+	moves.push(what);
+	commands['un'+command].apply(games,arr);
+    };	
+    that.execute = function(games,what) {
+	var arr = what.split(" ");
+	var command = arr[0];
+	arr.shift();
+	moves.push(what);
+	commands[command].apply(games,arr);
+    };
+    return that;
+}());

@@ -1,24 +1,11 @@
-/*global $,create_table,tiles,states,alert */
+/*global $,create_table,tiles,states,alert,vplayer,window */
 var tile = function(n,size) {
     var t = {
 	n: n,
 	size: size,
 	selected: null,
 	to_string: function(){
-	    var i,k;
-	    var s = [];
-	    for( i=0 ; i<n; i++){
-		s[i] = [];
-		for ( k=0; k<n; k++){
-		    if (t.table[i][k] === null) {
-		      s[i][k] = 0; 
-		    } else {
-			s[i][k] = { color: t.table[i][k].color,
-				    angle: t.table[i][k].angle};
-		    }
-		}
-	    }
-	    return JSON.stringify(s);
+	    return JSON.stringify(t);
 	},
 	select: function(which_tile){
 	    this.selected = which_tile;
@@ -138,25 +125,43 @@ var tile = function(n,size) {
 	    t.selected.deactivate();
 	    t.states.buttons();
 	},
+	execute_command: function(){
+	    var vp = vplayer;
+	    vp.execute(t,$("#command").val());
+	},
+	undo_command: function(){
+	    var vp = vplayer;
+	    vp.undo(t,$("#command").val());
+	},
 	bind_buttons: function(){
 	    $("#done").click(t.done_action);
 	    $("#new_move").click(t.new_move_action);
 	    $("#pick").click(t.pick_action);
 	    $("#activate").click(t.activate_action);
+	    $("#cmd_button").click(t.execute_command);
+	    $("#undo_button").click(t.undo_command);
+	},
+	place: function(row,col,angle,color){
+	    var t1 = t.tiles.create(row,col,angle,color);
+	    t1.place();
+	    t.table[row][col] = t1;
+	    t.states.change("ROT_AFTER_PLACE");
+	    t.states.buttons(1,t1.is_active());
+	    t.select(t1); 
 	},
 	mouse_place: function(e){
 	    var what = t.states.on_move;
 	    var angle;
-	    var t1;
 	    var pos = t.xy_colrow(e);
+	    var t1;
 	    for ( angle = 0; angle <= 7; angle++){
 		if(t.check_placement(pos.row,pos.col,angle) && t.can_be_activate(pos.row,pos.col,angle)){
-		    t1 = t.tiles.create(pos.row,pos.col,angle,what);
-		    t1.place();
-		    t.table[pos.row][pos.col] = t1;
+		    
+		    t.place(pos.row,pos.col,angle,what);
+		    t1 = t.table[pos.row][pos.col];
 		    t.states.change("ROT_AFTER_PLACE");
 		    t.states.buttons(1,t1.is_active());
-		    t.select(t1);
+		    t.select(t1); 
 		    return;
 		}
 	    }
@@ -208,7 +213,7 @@ var tile = function(n,size) {
 	    var k = 1;
 	    while(from.col + k <= to.col){
 		if (  !t.can_slide({row: from.row,col: from.col + k} ,from.angle,'E')){
-		    return;
+		    return false;
 		}
 		k++;
 	    }
@@ -224,6 +229,7 @@ var tile = function(n,size) {
 	    from.col = to.col;
 	    from.row = to.row;
 	    from.redraw();
+	    return true;
 	    
 	},
 	slide_north: function (from,to){
@@ -231,7 +237,7 @@ var tile = function(n,size) {
 	    while(from.row - k >= to.row){
 
 		if ( !t.can_slide({row: from.row - k ,col: from.col} ,from.angle,'N')  ){
-		    return;
+		    return false;
 		}
 		k++;
 	    }
@@ -247,13 +253,13 @@ var tile = function(n,size) {
 	    from.col = to.col;
 	    from.row = to.row;
 	    from.redraw();
-	    
+	    return true;
 	},
 	slide_south: function (from,to){
 	    var k = 1;
 	    while(from.row + k <= to.row){
 		if (!t.can_slide({row: from.row + k ,col: from.col} ,from.angle,'S')){
-		    return;
+		    return false;
 
 		}
 		k++;
@@ -270,13 +276,14 @@ var tile = function(n,size) {
 	    from.col = to.col;
 	    from.row = to.row;
 	    from.redraw();
+	    return true;
 	    
 	},
 	slide_west: function (from,to){
 	    var k = 1;
 	    while(from.col - k >= to.col){
 		if ( !t.can_slide({row: from.row,col: from.col - k} ,from.angle,'W')){
-		    return;
+		    return false;
 		}
 		k++;
 	    }
@@ -293,7 +300,7 @@ var tile = function(n,size) {
 	    from.col = to.col;
 	    from.row = to.row;
 	    from.redraw();
-	    
+	    return true;
 	},
 	slide_to:function(from,to){
  	    var tt = t.table[from.row][from.col];
@@ -306,18 +313,26 @@ var tile = function(n,size) {
 	    }
 	    
 	    if (from.row == to.row  && from.col < to.col ) { // slide east 
-		t.slide_east(from,to);
+		if (!t.slide_east(from,to)){
+		    return;
+		}
 	    }
 	    if (from.row == to.row  && from.col > to.col ) { // slide west
-		t.slide_west(from,to);
+		if(!t.slide_west(from,to)){
+		    return;
+		}
 	    } 
 
 	    if (from.col == to.col  && from.row < to.row ) { // slide south
-		t.slide_south(from,to);
+		if(!t.slide_south(from,to)){
+		    return;
+		}
 	    } 
 
 	    if (from.col == to.col  && from.row > to.row ) { // slide north
-		t.slide_north(from,to);
+		if(!t.slide_north(from,to)){
+		    return;
+		}
 	    }
 	    if ( t.can_be_activate(from.row,from.col,angle)){
 		t.states.change("AFTER_SLIDE_ACTIVE");
@@ -365,13 +380,21 @@ var tile = function(n,size) {
 		}
 	    }
 	},
+	log_table: function(){
+	    var i;
+	    for(i=0;i<n;i++){
+		console.log(t.table[i]);
+	    }
+	},
+	remove: function(row,col){
+	    t.table[row][col].remove();
+	    t.table[row][col] = null;
+	},
 	click_on_tile: function(tile_at_click,side){
 	    var new_angle;
 	    var st = t.states.get_state();
-	    console.log(st);
 	    if (st === "CHOSE_PIECE_TO_REMOVE" && tile_at_click.color == t.states.on_move ){
-		tile_at_click.remove();
-		t.table[tile_at_click.row][tile_at_click.col] = null;
+		t.remove(tile_at_click.row,tile_at_click.col);
 		t.states.change("PLACE_OR_ROTATE");
 		t.states.buttons();
 	    }
@@ -383,7 +406,7 @@ var tile = function(n,size) {
 		t.select(tile_at_click);
 	    }
 		
-	    if ( st == "PLACE_OR_ROTATE" && tile_at_click.color == t.states.on_move && tile_at_click.is_active() === true ) {
+	    if ( (st == "PLACE_OR_ROTATE" || st == "CHOSE_NEW_MOVE")  && tile_at_click.color == t.states.on_move && tile_at_click.is_active() === true ) {
 		t.states.change("ROT_ACTIVE");
 		t.select(tile_at_click);
 		new_angle = tile_at_click.rotate_pos(tile.angle,side);
@@ -432,9 +455,9 @@ var tile = function(n,size) {
     return t;
 };
 
-
-$( function(){
-    tile = tile(8,40);
+$(function(){
+    tile = tile(8,30);
+    tile.set_score();
     tile.table.draw_grid();
     $('#tiles').mousedown(tile.mouse_down);
     $('body').keydown(function(e){

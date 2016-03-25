@@ -12,9 +12,10 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require turbolinks
+//= require bootstrap.min
 //= require d3
 //= require tile
 //= require table
 //= require states
+//= require vplayer
 //= require games

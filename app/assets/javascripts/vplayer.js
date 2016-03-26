@@ -1,9 +1,9 @@
 var vplayer = (function(){
     var moves = [];
     var from_where = function(where) {
-	    var col = where.charCodeAt(0) - 65;
-	    var row = where.substring(1,200);
-	    return { col: col, row: row};
+	var col = where.charCodeAt(0) - 65;
+	var row = where.substring(1,200);
+	return { col: Number(col), row: Number(row)};
     };
     var commands = {
 	
@@ -22,9 +22,7 @@ var vplayer = (function(){
 	    piece.angle = Number(angle_from);
 	    var brojac = 0; 
 	    while(piece.angle != Number(angle_to) && brojac < 8  ){
-		console.log(piece.angle);
 		piece.rotate(s);
-		console.log(piece.angle);
 		brojac++;
 	    }
 	},
@@ -34,12 +32,25 @@ var vplayer = (function(){
 	    piece.angle = Number(angle_to);
 	    var brojac = 0;
 	    while(piece.angle != Number(angle_from) && brojac < 8 ){
-		console.log(piece.angle);
 		piece.rotate(-s);
-		console.log(piece.angle);
 		brojac++;
 	    }
+	},
+	deselect: function(where){
+	    var w = from_where(where);
+	    this.table[w.row][w.col].deactivate();
+	},
+	undeselect: function(where){
+	    var w = from_where(where);
+	    this.table[w.row][w.col].activate();
+	},
+	move: function(from,to){
+	    console.log('in move');
+	    var f = from_where(from);
+	    var t = from_where(to);
+	    this.slide_to(this.table[f.row][f.col],t);
 	}
+	
 	    
     };
     var that = {};
@@ -55,7 +66,7 @@ var vplayer = (function(){
 	var arr = what.split(";");
 	var i;
 	for (i=arr.length; i>0; i--){
-	    that.undo(games,arr[i]);
+	    that.undo_one(games,arr[i-1]);
 	}
     };
     
@@ -72,6 +83,7 @@ var vplayer = (function(){
 	arr.shift();
 	moves.push(what);
 	console.log(what);
+	console.log(commands);
 	commands[command].apply(games,arr);
     };
     return that;

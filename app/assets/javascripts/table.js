@@ -28,6 +28,8 @@ function create_table(n,size){
 		    
     
     g.touch_by=function(row,col){
+	console.log("Row and col");
+	console.log(row,col);
 	var touch = [0,0,0,0]; // N E S W
 	if (row === 0) {
 	    touch[0] = 1;

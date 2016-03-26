@@ -15,9 +15,9 @@ var tile = function(n,size) {
 	    $("#score").text("White " + t.table.count_active(0) + "/" + t.table.count_all(0)  + " Black " + t.table.count_active(1) + "/" + t.table.count_all(1));
 	   
 	},
-	deselect: function(which_tile){
+	deselect: function(){
+	    this.selected.deactivate();
 	    this.selected = null;
-	    which_tile.deactivate();
 	},
 	table: create_table(8,size),
 	tiles: tiles("#tiles",size,["white","black"]),
@@ -167,7 +167,11 @@ var tile = function(n,size) {
 	    }
 	    
 	},
+	
 	can_slide: function(where,pos,s){
+	    console.log("Where " + where);
+	    console.log("Pos " + pos);
+	    console.log("S " + s);
 	    var tt = t.table[where.row][where.col];
 	    var touch;
 	    if ( tt != null ){
@@ -211,12 +215,15 @@ var tile = function(n,size) {
 	},
 	slide_east: function (from,to){
 	    var k = 1;
+	    console.log("From col " + from.col);
+	    console.log("To col " + to.col);
 	    while(from.col + k <= to.col){
 		if (  !t.can_slide({row: from.row,col: from.col + k} ,from.angle,'E')){
 		    return false;
 		}
 		k++;
 	    }
+	    console.log("in slide east and possible");
 	    t.table[from.row][from.col] = null;
 	    t.table[to.row][to.col] = from;
 	    k = 1;
@@ -259,6 +266,7 @@ var tile = function(n,size) {
 	    var k = 1;
 	    while(from.row + k <= to.row){
 		if (!t.can_slide({row: from.row + k ,col: from.col} ,from.angle,'S')){
+		   
 		    return false;
 
 		}
@@ -312,7 +320,7 @@ var tile = function(n,size) {
 		return; //cant slide diagonaly
 	    }
 	    
-	    if (from.row == to.row  && from.col < to.col ) { // slide east 
+	    if (from.row == to.row  && from.col < to.col ) { // slide east
 		if (!t.slide_east(from,to)){
 		    return;
 		}

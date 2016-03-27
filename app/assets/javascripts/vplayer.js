@@ -16,6 +16,14 @@ var vplayer = (function(){
 	    this.remove(w.row,w.col,who,pos);
 	    
 	},
+	pick: function(who,where,pos){
+	    var w = from_where(where);
+	    this.remove(w.row,w.col,who,pos);
+	},
+	unpick: function(who,where,pos){
+	    var w = from_where(where); 
+	    this.place(w.row,w.col,pos,who);
+	},
 	rotate: function(where,angle_from,angle_to,s){
 	    var w = from_where(where);
 	    var piece = this.table[w.row][w.col];

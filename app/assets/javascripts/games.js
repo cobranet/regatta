@@ -7,6 +7,9 @@ var tile = function(n,size) {
 	to_string: function(){
 	    return JSON.stringify(t);
 	},
+	save: function(){
+	    $.post('/games/1/save',t.to_string()); 
+	},
 	select: function(which_tile){
 	    this.selected = which_tile;
 	    which_tile.activate();
@@ -464,7 +467,7 @@ var tile = function(n,size) {
 };
 
 $(function(){
-    tile = tile(8,30);
+    tile = tile(8,40);
     tile.set_score();
     tile.table.draw_grid();
     $('#tiles').mousedown(tile.mouse_down);
@@ -474,7 +477,7 @@ $(function(){
     tile.bind_buttons();
     tile.states.hint();
     tile.states.buttons(false);
-    $("#tiles").attr("width",tile.size * tile.n + 3);
-    $("#tiles").attr("height",tile.size * tile.n + 3);
+    $("#tiles").attr("width",tile.size * tile.n + 15);
+    $("#tiles").attr("height",tile.size * tile.n + 15);
 
 } );

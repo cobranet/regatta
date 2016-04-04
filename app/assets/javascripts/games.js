@@ -4,6 +4,7 @@ var tile = function(n,size) {
 	n: n,
 	size: size,
 	selected: null,
+	from : {},
 	moves: [],
 	to_string: function(){
 	    return JSON.stringify(t);
@@ -14,6 +15,38 @@ var tile = function(n,size) {
 	    $.post('/games/' + game_div.data("game_id") + '/save',{
 		id: game_div.data("game_id"),
 		game: t.to_string()}); 
+	},
+	draw_game: function(){
+	    var i,k;
+	    var current;
+	    for(i = 0; i < t.n; i++) {
+		for (k=0; k < t.n; k++) {
+		    current = t.table[i][k];
+		    if (current != null) {
+                        t.place(current.row,
+				current.col,
+				current.angle,
+				current.color)
+			    .deactivate();
+			
+		    }
+		}
+	    }
+	},
+	load: function(){
+	    var game_div = $("#game_row");
+	    alert("Loading game");
+	    $.get('/games/' + game_div.data("game_id") + '/load',
+		  { id: game_div.data("game_id") },
+		  function(data){
+		      var game = $.parseJSON(data.game);
+		      t.table = create_table(game.n,game.size);
+		      t.n = game.n;
+		      t.table = game.table;
+		      t.size = game.size;
+		      t.draw_game();
+		  });
+	    
 	},
 	select: function(which_tile){
 	    this.selected = which_tile;
@@ -96,12 +129,15 @@ var tile = function(n,size) {
 	col_to_ascii: function(col){
 	    return String.fromCharCode(65 + col);
 	},
+	insert_move: function (move){
+	    t.moves.push(move);
+	},
 	done_action: function() {
 	    var st = t.states.get_state();
 	    if (st == "ROT_AFTER_PLACE" || st == "AFTER_SLIDE_INACTIVE" || st == "ROTATE_AFTER_ACTIVATE"  ) {
 
 		if ( st == "ROT_AFTER_PLACE") {
-                    t.moves.push("PLACE " + t.selected.color + " " + t.col_to_ascii(t.selected.col) + t.row + " " + t.angle ); 
+                    t.insert_move("PLACE " + t.selected.color + " " + t.col_to_ascii(t.selected.col) + t.selected.row + " " + t.selected.angle ); 
                 }
 		
 		t.selected.deactivate();
@@ -118,6 +154,7 @@ var tile = function(n,size) {
 		return;
 	    }
 	    if (st == "AFTER_SLIDE_ACTIVE" ) {
+		t.insert_move("SLIDE " + t.selected.color + " " +t.col_to_ascii(t.from.col) + t.from.row + " " + t.col_to_ascii(t.selected.col) + t.row + " " + t.angle);
 		t.selected.deactivate();
 		t.states.change('PLACE_OR_ROTATE');
 		t.states.check_win(t.table);
@@ -157,6 +194,7 @@ var tile = function(n,size) {
 	    $("#cmd_button").click(t.execute_command);
 	    $("#undo_button").click(t.undo_command);
 	    $("#save_button").click(t.save);
+	    $("#load_button").click(t.load);
 	},
 	place: function(row,col,angle,color){
 	    var t1 = t.tiles.create(row,col,angle,color);
@@ -164,7 +202,8 @@ var tile = function(n,size) {
 	    t.table[row][col] = t1;
 	    t.states.change("ROT_AFTER_PLACE");
 	    t.states.buttons(1,t1.is_active());
-	    t.select(t1); 
+	    t.select(t1);
+	    return t1;
 	},
 	mouse_place: function(e){
 	    var what = t.states.on_move;
@@ -247,6 +286,8 @@ var tile = function(n,size) {
 		t.kick(to.row-1, from.col + k, -1,2);
 		k++;
 	    }
+	    t.from.col = from.col;
+ 	    t.from.row = from.row;
 	    from.col = to.col;
 	    from.row = to.row;
 	    from.redraw();
@@ -271,6 +312,8 @@ var tile = function(n,size) {
 		t.kick(from.row - k  , from.col - 1,-1,1);
 		k++;
 	    }
+	    t.from.col = from.col;
+ 	    t.from.row = from.row;
 	    from.col = to.col;
 	    from.row = to.row;
 	    from.redraw();
@@ -295,6 +338,8 @@ var tile = function(n,size) {
 		t.kick(from.row + k  , from.col - 1,1,1);
 		k++;
 	    }
+	    t.from.col = from.col;
+ 	    t.from.row = from.row;
 	    from.col = to.col;
 	    from.row = to.row;
 	    from.redraw();
@@ -319,6 +364,8 @@ var tile = function(n,size) {
 		t.kick(to.row - 1 , from.col - k,1,2);
 		k++;
 	    }
+	    t.from.col = from.col;
+ 	    t.from.row = from.row;
 	    from.col = to.col;
 	    from.row = to.row;
 	    from.redraw();

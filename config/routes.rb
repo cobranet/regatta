@@ -22,6 +22,7 @@ Rails.application.routes.draw do
      resources :games do
        member do
          post 'save'
+         get 'load'
        end
     
   #     collection do

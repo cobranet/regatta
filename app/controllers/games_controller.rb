@@ -7,6 +7,10 @@ class GamesController < ApplicationController
     game.save!
     render :json => { game: game.id }
   end
+  def load
+    game = Game.find(params[:id].to_i)
+    render :json => { game: game.game }
+  end
   def new
     game = Game.new
     game.save!
